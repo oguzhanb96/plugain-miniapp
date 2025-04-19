@@ -28,3 +28,8 @@ export function saveUserData(userId, username, chatId) {
     createdAt: new Date().toISOString()
   });
 }
+
+
+
+
+Add firebase.js to initialize Firebase and save user data
