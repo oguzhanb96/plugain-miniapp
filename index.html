@@ -9,11 +9,14 @@
   <h1>Plugain'e Hoş Geldin</h1>
   <p>Token toplamak için bu uygulamayı kullan!</p>
 
+  <button id="collectBtn">Topla</button>
+  <p id="status"></p>
+
   <script type="module">
     // Firebase SDK'ları
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
 
     // Firebase konfigürasyonu
     const firebaseConfig = {
@@ -37,7 +40,21 @@
       return set(ref(database, 'users/' + userId), {
         username: username,
         chatId: chatId,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        token: 0
+      });
+    }
+
+    // Token sayısını artır
+    async function incrementUserToken(userId) {
+      const userRef = ref(database, 'users/' + userId);
+      const snapshot = await get(userRef);
+      const userData = snapshot.val();
+      const currentToken = userData?.token || 0;
+
+      return set(userRef, {
+        ...userData,
+        token: currentToken + 1
       });
     }
 
@@ -57,6 +74,20 @@
         .catch((error) => {
           console.error("Firebase'e kayıt hatası:", error);
         });
+
+      // Butona tıklama işlemi
+      document.getElementById("collectBtn").addEventListener("click", () => {
+        if (!userId) return alert("Kullanıcı bilgisi alınamadı");
+
+        incrementUserToken(userId)
+          .then(() => {
+            document.getElementById("status").innerText = "🎉 Token kazanıldı!";
+          })
+          .catch((error) => {
+            console.error("Token artırma hatası:", error);
+            document.getElementById("status").innerText = "❌ Token artırılamadı.";
+          });
+      });
     };
   </script>
 </body>
