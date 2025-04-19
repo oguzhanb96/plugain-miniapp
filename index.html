@@ -77,3 +77,19 @@
     </script>
   </body>
 </html>
+
+
+<script>
+  const tg = window.Telegram.WebApp;
+  const user = tg.initDataUnsafe?.user;
+
+  if (user && user.username) {
+    document.body.innerHTML += `<p>Merhaba, @${user.username}</p>`;
+  } else if (user && user.first_name) {
+    document.body.innerHTML += `<p>Merhaba, ${user.first_name}</p>`;
+  } else {
+    document.body.innerHTML += `<p>Anonim kullanıcı</p>`;
+  }
+
+  console.log("Kullanıcı:", user);
+</script>
