@@ -32,8 +32,11 @@
         const username = user?.username || "Anonim"; // Kullanıcı adı, yoksa "Anonim"
         const chatId = tg.initDataUnsafe?.chat_instance;
 
+        console.log("Kullanıcı Verisi:", user); // Kullanıcı verilerini konsola yazdırıyoruz
+
         // Kullanıcı verisini Firebase'e kaydetme
         function saveUserData(userId, username, chatId) {
+            console.log("Kullanıcı kaydediliyor:", userId, username, chatId); // Konsola yazdırıyoruz
             return set(ref(database, 'users/' + userId), {
                 username: username,
                 chatId: chatId,
@@ -51,10 +54,13 @@
                 .catch((error) => {
                     console.error("Firebase'e kayıt hatası:", error);
                 });
+        } else {
+            console.error("Kullanıcı bilgisi alınamadı!");
         }
 
         // Token artırma fonksiyonu
         async function incrementUserToken(userId) {
+            console.log("Token artırılıyor:", userId); // Konsola yazdırıyoruz
             const userRef = ref(database, 'users/' + userId);
             const snapshot = await get(userRef);
             
