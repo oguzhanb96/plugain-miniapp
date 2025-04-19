@@ -1,106 +1,115 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Plugain Token Toplama</title>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Mini App</title>
+    <script type="module">
+        // firebase.js'yi import et
+        import { db, ref, get, set } from './firebase.js';
 
-    // Firebase ayarları (güncel)
-    const firebaseConfig = {
-      apiKey: "AIzaSyBwwATHKjJbwUQT7sNEHl-fVJUAN0mNqpk",
-      authDomain: "plugain.firebaseapp.com",
-      databaseURL: "https://plugain-plus-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "plugain",
-      storageBucket: "plugain.appspot.com",
-      messagingSenderId: "693636169295",
-      appId: "1:693636169295:web:fc965cea5bfe7b88bcb43a",
-      measurementId: "G-ENH4WNHVE4"
-    };
+        // Firebase: Kullanıcı verilerini getir ve arayüzü güncelle
+        const fetchAndDisplayUserData = async (username) => {
+            if (!db) {
+                console.warn("Firebase başlatılmamış, veri getirilemiyor.");
+                document.getElementById("status").textContent = "Durum: Firebase başlatılamadı!";
+                return;
+            }
 
-    // Firebase Başlat
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    console.log("✅ Firebase başlatıldı");
+            const userRef = ref(db, 'kullanicilar/' + username);
 
-    // Telegram Kullanıcı Bilgisi Al
-    const initializeTelegram = () => {
-      try {
-        const tg = window.Telegram.WebApp;
-        return tg.initDataUnsafe || null;
-      } catch (error) {
-        console.error("❌ Telegram başlatılamadı:", error);
-        document.getElementById("status").textContent = "Telegram başlatılamadı!";
-        return null;
-      }
-    };
+            try {
+                const snapshot = await get(userRef);
+                let currentTokens = 0;
 
-    // Firebase'den veri çek
-    const fetchUserData = async (username) => {
-      const userRef = ref(db, 'kullanicilar/' + username);
-      const snapshot = await get(userRef);
-      return snapshot.exists() ? snapshot.val().puan || 0 : 0;
-    };
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    currentTokens = userData.puan || 0;
+                }
 
-    // Firebase'e veri kaydet
-    const updateToken = async (username, puan) => {
-      const userRef = ref(db, 'kullanicilar/' + username);
-      await set(userRef, { puan });
-    };
+                document.getElementById("username").textContent = username;
+                document.getElementById("token").textContent = currentTokens;
+                document.getElementById("status").textContent = "Durum: Veri yüklendi.";
 
-    // Sayfa yüklendiğinde
-    window.onload = async () => {
-      const user = initializeTelegram();
+            } catch (error) {
+                console.error("Veri getirme hatası:", error);
+                document.getElementById("status").textContent = "Durum: Veri alınırken hata oluştu!";
+            }
+        };
 
-      if (user && user.username) {
-        const username = user.username;
-        const token = await fetchUserData(username);
+        // Firebase: Token toplama işlemi
+        const collectToken = async (username) => {
+            if (!db) {
+                console.warn("Firebase başlatılmamış, token toplanamıyor.");
+                document.getElementById("status").textContent = "Durum: Firebase başlatılamadı!";
+                return;
+            }
 
-        document.getElementById("username").textContent = username;
-        document.getElementById("token").textContent = token;
-        document.getElementById("status").textContent = "Veri yüklendi ✅";
+            const userRef = ref(db, 'kullanicilar/' + username);
 
-        document.getElementById("collect").addEventListener("click", async () => {
-          const currentToken = await fetchUserData(username);
-          const newToken = currentToken + 1;
-          await updateToken(username, newToken);
-          document.getElementById("token").textContent = newToken;
-          document.getElementById("status").textContent = "Token toplandı 🚀";
-        });
+            try {
+                const snapshot = await get(userRef);
+                let currentTokens = 0;
 
-      } else {
-        document.getElementById("status").textContent = "Kullanıcı adı alınamadı!";
-      }
-    };
-  </script>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      background: #f5f5f5;
-      text-align: center;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 18px;
-      border: none;
-      background: #0088cc;
-      color: white;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0077b3;
-    }
-  </style>
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    currentTokens = userData.puan || 0;
+                }
+
+                const newTokenCount = currentTokens + 1;
+                await set(userRef, { puan: newTokenCount });
+
+                document.getElementById("token").textContent = newTokenCount;
+                document.getElementById("status").textContent = "Durum: Token toplandı!";
+
+            } catch (error) {
+                console.error("Token toplama hatası:", error);
+                document.getElementById("status").textContent = "Durum: Token toplama hatası!";
+            }
+        };
+
+        // Telegram Web App: Kullanıcı bilgilerini al
+        const initializeTelegram = () => {
+            try {
+                const tg = window.Telegram.WebApp;
+                tg.initDataUnsafe = JSON.parse(tg.initData);
+                return tg.initDataUnsafe;
+            } catch (error) {
+                console.error("Telegram başlatma hatası:", error);
+                document.getElementById("status").textContent = "Durum: Telegram başlatılamadı!";
+                return null;
+            }
+        };
+
+        // Sayfa yüklendiğinde yapılacak işlemler
+        window.onload = () => {
+            const user = initializeTelegram();
+
+            if (user && user.username) {
+                fetchAndDisplayUserData(user.username);
+            } else {
+                console.log("Kullanıcı adı alınamadı.");
+                document.getElementById("status").textContent = "Durum: Kullanıcı adı alınamadı!";
+            }
+
+            document.getElementById("collect").addEventListener("click", () => {
+                if (user && user.username) {
+                    collectToken(user.username);
+                } else {
+                    console.log("Kullanıcı adı alınamadı.");
+                    document.getElementById("status").textContent = "Durum: Kullanıcı adı alınamadı!";
+                }
+            });
+        };
+    </script>
 </head>
 <body>
-  <h2>Plugain Token Toplama</h2>
-  <p>Kullanıcı: <strong id="username">Yükleniyor...</strong></p>
-  <p>Token: <strong id="token">0</strong></p>
-  <button id="collect">Token Topla</button>
-  <p id="status">Bekleniyor...</p>
+    <h1>Telegram Mini App</h1>
+    <div>
+        <p>Kullanıcı: <span id="username">Yükleniyor...</span></p>
+        <p>Token Sayısı: <span id="token">Yükleniyor...</span></p>
+        <button id="collect">Token Topla</button>
+        <p id="status">Durum: Bekliyor...</p>
+    </div>
 </body>
 </html>
