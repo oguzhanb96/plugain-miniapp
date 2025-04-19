@@ -1,142 +1,142 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Mini App</title>
-    <script type="module">
-        // Firebase SDK'yi import ediyoruz
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram Mini App</title>
+  <script type="module">
+    // Firebase SDK'yi import ediyoruz
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
 
-        // Firebase yapılandırma
-        const firebaseConfig = {
-          apiKey: "AIzaSyBwwATHKjJbwUQT7sNEHl-fVJUAN0mNqpk",
-          authDomain: "plugain.firebaseapp.com",
-          databaseURL: "https://plugain-default-rtdb.europe-west1.firebasedatabase.app",
-          projectId: "plugain",
-          storageBucket: "plugain.firebasestorage.app",
-          messagingSenderId: "693636169295",
-          appId: "1:693636169295:web:fc965cea5bfe7b88bcb43a",
-          measurementId: "G-ENH4WNHVE4"
-        };
+    // Firebase yapılandırma
+    const firebaseConfig = {
+      apiKey: "AIzaSyBwwATHKjJbwUQT7sNEHl-fVJUAN0mNqpk",
+      authDomain: "plugain.firebaseapp.com",
+      databaseURL: "https://plugain-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "plugain",
+      storageBucket: "plugain.firebasestorage.app",
+      messagingSenderId: "693636169295",
+      appId: "1:693636169295:web:fc965cea5bfe7b88bcb43a",
+      measurementId: "G-ENH4WNHVE4"
+    };
 
-        // Firebase başlatma
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
+    // Firebase başlatma
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
 
-        // Telegram WebApp'den gelen kullanıcı verisi
-        const tg = window.Telegram.WebApp;
-        const user = tg.initDataUnsafe.user;
-        const userId = user?.id; // Kullanıcı ID'si
-        const username = user?.username || "Anonim"; // Kullanıcı adı, yoksa "Anonim"
-        const chatId = tg.initDataUnsafe?.chat_instance;
+    // Telegram WebApp'den gelen kullanıcı verisi
+    const tg = window.Telegram.WebApp;
+    const user = tg.initDataUnsafe.user;
+    const userId = user?.id; // Kullanıcı ID'si
+    const username = user?.username || "Anonim"; // Kullanıcı adı, yoksa "Anonim"
+    const chatId = tg.initDataUnsafe?.chat_instance;
 
-        console.log("Kullanıcı Verisi:", user); // Kullanıcı verilerini konsola yazdırıyoruz
+    console.log("Kullanıcı Verisi:", user); // Kullanıcı verilerini konsola yazdırıyoruz
 
-        // Kullanıcı verisini Firebase'e kaydetme
-        function saveUserData(userId, username, chatId) {
-            console.log("Kullanıcı kaydediliyor:", userId, username, chatId); // Konsola yazdırıyoruz
-            return set(ref(database, 'users/' + userId), {
-                username: username,
-                chatId: chatId,
-                createdAt: new Date().toISOString(),
-                token: 0 // Başlangıçta token 0
-            });
-        }
+    // Kullanıcı verisini Firebase'e kaydetme
+    function saveUserData(userId, username, chatId) {
+      console.log("Kullanıcı kaydediliyor:", userId, username, chatId); // Konsola yazdırıyoruz
+      return set(ref(database, 'users/' + userId), {
+        username: username,
+        chatId: chatId,
+        createdAt: new Date().toISOString(),
+        token: 0 // Başlangıçta token 0
+      });
+    }
 
-        // Kullanıcıyı Firebase'e kaydedelim
-        if (userId) {
-            saveUserData(userId, username, chatId)
-                .then(() => {
-                    console.log("Kullanıcı Firebase'e kaydedildi!");
-                })
-                .catch((error) => {
-                    console.error("Firebase'e kayıt hatası:", error);
-                });
-        } else {
-            console.error("Kullanıcı bilgisi alınamadı!");
-        }
-
-        // Token artırma fonksiyonu
-        async function incrementUserToken(userId) {
-            console.log("Token artırılıyor:", userId); // Konsola yazdırıyoruz
-            const userRef = ref(database, 'users/' + userId);
-            const snapshot = await get(userRef);
-            
-            // Kullanıcı verilerini alalım
-            const userData = snapshot.val();
-            if (userData) {
-                const currentToken = userData.token || 0;
-
-                // Token'ı 1 artırıyoruz
-                return update(userRef, {
-                    token: currentToken + 1
-                });
-            } else {
-                console.error("Kullanıcı verisi bulunamadı!");
-                return Promise.reject("Kullanıcı verisi bulunamadı");
-            }
-        }
-
-        // Butona tıklama olayı
-        document.addEventListener("DOMContentLoaded", function() {
-            const collectBtn = document.getElementById("collectBtn");
-            const statusText = document.getElementById("status");
-            const usernameText = document.getElementById("username");
-            const tokenCountText = document.getElementById("tokenCount");
-
-            // Kullanıcı adı ve token sayısını ekranda göstermek
-            if (usernameText) {
-                usernameText.innerText = "Kullanıcı: " + username;
-            }
-
-            collectBtn.addEventListener("click", () => {
-                console.log("Butona tıklandı!");  // Butonun çalışıp çalışmadığını kontrol etmek için
-                if (!userId) {
-                    alert("Kullanıcı bilgisi alınamadı");
-                    return;
-                }
-
-                incrementUserToken(userId)
-                    .then(() => {
-                        statusText.innerText = "🎉 Token kazanıldı!";
-                        updateTokenCount(userId);
-                    })
-                    .catch((error) => {
-                        console.error("Token artırma hatası:", error);
-                        statusText.innerText = "❌ Token artırılamadı.";
-                    });
-            });
-
-            // Token sayısını güncelleme
-            async function updateTokenCount(userId) {
-                const userRef = ref(database, 'users/' + userId);
-                const snapshot = await get(userRef);
-
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    const tokenCount = userData.token || 0;
-                    if (tokenCountText) {
-                        tokenCountText.innerText = "Token Sayısı: " + tokenCount;
-                    }
-                } else {
-                    console.error("Kullanıcı verisi bulunamadı!");
-                }
-            }
-
-            // Sayfa yüklendiğinde token sayısını güncelle
-            if (userId) {
-                updateTokenCount(userId);
-            }
+    // Kullanıcıyı Firebase'e kaydedelim
+    if (userId) {
+      saveUserData(userId, username, chatId)
+        .then(() => {
+          console.log("Kullanıcı Firebase'e kaydedildi!");
+        })
+        .catch((error) => {
+          console.error("Firebase'e kayıt hatası:", error);
         });
-    </script>
+    } else {
+      console.error("Kullanıcı bilgisi alınamadı!");
+    }
+
+    // Token artırma fonksiyonu
+    async function incrementUserToken(userId) {
+      console.log("Token artırılıyor:", userId); // Konsola yazdırıyoruz
+      const userRef = ref(database, 'users/' + userId);
+      const snapshot = await get(userRef);
+
+      // Kullanıcı verilerini alalım
+      const userData = snapshot.val();
+      if (userData) {
+        const currentToken = userData.token || 0;
+
+        // Token'ı 1 artırıyoruz
+        return update(userRef, {
+          token: currentToken + 1
+        });
+      } else {
+        console.error("Kullanıcı verisi bulunamadı!");
+        return Promise.reject("Kullanıcı verisi bulunamadı");
+      }
+    }
+
+    // Butona tıklama olayı
+    document.addEventListener("DOMContentLoaded", function() {
+      const collectBtn = document.getElementById("collectBtn");
+      const statusText = document.getElementById("status");
+      const usernameText = document.getElementById("username");
+      const tokenCountText = document.getElementById("tokenCount");
+
+      // Kullanıcı adı ve token sayısını ekranda göstermek
+      if (usernameText) {
+        usernameText.innerText = "Kullanıcı: " + username;
+      }
+
+      collectBtn.addEventListener("click", () => {
+        console.log("Butona tıklandı!");  // Butonun çalışıp çalışmadığını kontrol etmek için
+        if (!userId) {
+          alert("Kullanıcı bilgisi alınamadı");
+          return;
+        }
+
+        incrementUserToken(userId)
+          .then(() => {
+            statusText.innerText = "🎉 Token kazanıldı!";
+            updateTokenCount(userId);
+          })
+          .catch((error) => {
+            console.error("Token artırma hatası:", error);
+            statusText.innerText = "❌ Token artırılamadı.";
+          });
+      });
+
+      // Token sayısını güncelleme
+      async function updateTokenCount(userId) {
+        const userRef = ref(database, 'users/' + userId);
+        const snapshot = await get(userRef);
+
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          const tokenCount = userData.token || 0;
+          if (tokenCountText) {
+            tokenCountText.innerText = "Token Sayısı: " + tokenCount;
+          }
+        } else {
+          console.error("Kullanıcı verisi bulunamadı!");
+        }
+      }
+
+      // Sayfa yüklendiğinde token sayısını güncelle
+      if (userId) {
+        updateTokenCount(userId);
+      }
+    });
+  </script>
 </head>
 <body>
-    <h1>Telegram Mini App</h1>
-    <p id="username">Kullanıcı: Yükleniyor...</p>
-    <p id="tokenCount">Token Sayısı: Yükleniyor...</p>
-    <button id="collectBtn">Token Topla</button>
-    <p id="status">Durum: Bekliyor...</p>
+  <h1>Telegram Mini App</h1>
+  <div id="username">Yükleniyor...</div>
+  <div id="tokenCount">Token Sayısı: Yükleniyor...</div>
+  <button id="collectBtn">Token Topla</button>
+  <div id="status">Durum: Bekliyor...</div>
 </body>
 </html>
