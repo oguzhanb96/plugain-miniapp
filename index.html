@@ -1,42 +1,79 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8" />
-  <title>Plugain</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      margin-top: 50px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 18px;
-      border: none;
-      border-radius: 10px;
-      background-color: #0088cc;
-      color: white;
-    }
-  </style>
-</head>
-<body>
-  <h1>Plugain'e Hoş Geldin</h1>
-  <p id="username">Giriş yapılıyor...</p>
-  <button id="collectButton">Topla</button>
+  <head>
+    <title>Plugain Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <style>
+      body {
+        font-family: sans-serif;
+        text-align: center;
+        margin-top: 50px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 18px;
+        background-color: #2a9d8f;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      #puan {
+        margin-top: 20px;
+        font-size: 24px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Plugain'e Hoş Geldin</h2>
+    <div id="kullanici"></div>
+    <button id="toplaBtn">🪙 Topla</button>
+    <div id="puan">Puan: 0</div>
 
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+    <script>
+      // Firebase Ayarları
+      const firebaseConfig = {
+        apiKey: "AIzaSyBwwATHKjJbwUQT7sNEHl-fVJUAN0mNqpk",
+        authDomain: "plugain.firebaseapp.com",
+        databaseURL: "https://plugain-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "plugain",
+        storageBucket: "plugain.firebasestorage.app",
+        messagingSenderId: "693636169295",
+        appId: "1:693636169295:web:fc965cea5bfe7b88bcb43a",
+        measurementId: "G-ENH4WNHVE4"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
 
-    const user = tg.initDataUnsafe?.user;
-    if (user) {
-      document.getElementById("username").innerText = `@${user.username}`;
-    }
+      const tg = window.Telegram.WebApp;
+      const user = tg.initDataUnsafe?.user;
 
-    document.getElementById("collectButton").addEventListener("click", () => {
-      alert("Butona tıkladın! (Henüz veri kaydı yok)");
-    });
-  </script>
-</body>
+      const username = user?.username || "anonim";
+      document.getElementById("kullanici").innerText = "@" + username;
+
+      const puanEl = document.getElementById("puan");
+
+      function kullaniciPuanYukle() {
+        db.ref("kullanicilar/" + username + "/puan").once("value", (snap) => {
+          const puan = snap.val() || 0;
+          puanEl.innerText = "Puan: " + puan;
+        });
+      }
+
+      document.getElementById("toplaBtn").addEventListener("click", () => {
+        const ref = db.ref("kullanicilar/" + username + "/puan");
+        ref.transaction((puan) => {
+          return (puan || 0) + 1;
+        }).then(() => {
+          kullaniciPuanYukle();
+          alert("🪙 1 puan kazandın!");
+        });
+      });
+
+      kullaniciPuanYukle();
+    </script>
+  </body>
 </html>
