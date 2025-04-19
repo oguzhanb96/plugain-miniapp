@@ -1,25 +1,9 @@
-// Firebase konfigürasyonu
-const firebaseConfig = {
-  apiKey: "AIzaSyBwwATHKjJbwUQT7sNEHl-fVJUAN0mNqpk",
-  authDomain: "plugain.firebaseapp.com",
-  databaseURL: "https://plugain-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "plugain",
-  storageBucket: "plugain.firebasestorage.app",
-  messagingSenderId: "693636169295",
-  appId: "1:693636169295:web:fc965cea5bfe7b88bcb43a",
-  measurementId: "G-ENH4WNHVE4"
-};
-
-// Firebase'i başlat
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
 // Token toplama fonksiyonu
 document.getElementById("collect").addEventListener("click", () => {
   const userId = tg.initDataUnsafe.id; // Kullanıcı ID'sini al
 
   if (userId) {
-    const userRef = ref(db, 'users/' + userId);
+    const userRef = ref(db, 'kullanicilar/' + userId); // 'users' yerine 'kullanicilar' kullanıyoruz
 
     // Kullanıcı verilerini al
     get(userRef).then((snapshot) => {
