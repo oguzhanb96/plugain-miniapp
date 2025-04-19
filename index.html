@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Plugain</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      background-color: #0088cc;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Plugain'e Hoş Geldin</h1>
+  <p id="username">Giriş yapılıyor...</p>
+  <button id="collectButton">Topla</button>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const user = tg.initDataUnsafe?.user;
+    if (user) {
+      document.getElementById("username").innerText = `@${user.username}`;
+    }
+
+    document.getElementById("collectButton").addEventListener("click", () => {
+      alert("Butona tıkladın! (Henüz veri kaydı yok)");
+    });
+  </script>
+</body>
+</html>
