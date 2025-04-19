@@ -1,98 +1,63 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Plugain Mini App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-    <style>
-      body {
-        font-family: sans-serif;
-        text-align: center;
-        margin-top: 50px;
-      }
-      button {
-        padding: 10px 20px;
-        font-size: 18px;
-        background-color: #2a9d8f;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-      }
-      #puan {
-        margin-top: 20px;
-        font-size: 24px;
-        font-weight: bold;
-      }
-    </style>
-  </head>
-  <body>
-    <h2>Plugain'e Hoş Geldin</h2>
-    <div id="kullanici"></div>
-    <button id="toplaBtn">🪙 Topla</button>
-    <div id="puan">Puan: 0</div>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plugain Mini App</title>
+</head>
+<body>
+  <h1>Plugain'e Hoş Geldin</h1>
+  <p>Token toplamak için bu uygulamayı kullan!</p>
 
-    <script>
-      // Firebase Ayarları
-      const firebaseConfig = {
-        apiKey: "AIzaSyBwwATHKjJbwUQT7sNEHl-fVJUAN0mNqpk",
-        authDomain: "plugain.firebaseapp.com",
-        databaseURL: "https://plugain-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "plugain",
-        storageBucket: "plugain.firebasestorage.app",
-        messagingSenderId: "693636169295",
-        appId: "1:693636169295:web:fc965cea5bfe7b88bcb43a",
-        measurementId: "G-ENH4WNHVE4"
-      };
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.database();
+  <script type="module">
+    // Firebase SDK'ları
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
 
-      const tg = window.Telegram.WebApp;
-      const user = tg.initDataUnsafe?.user;
+    // Firebase konfigürasyonu
+    const firebaseConfig = {
+      apiKey: "AIzaSyBwwATHKjJbwUQT7sNEHl-fVJUAN0mNqpk",
+      authDomain: "plugain.firebaseapp.com",
+      databaseURL: "https://plugain-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "plugain",
+      storageBucket: "plugain.firebasestorage.app",
+      messagingSenderId: "693636169295",
+      appId: "1:693636169295:web:fc965cea5bfe7b88bcb43a",
+      measurementId: "G-ENH4WNHVE4"
+    };
 
-      const username = user?.username || "anonim";
-      document.getElementById("kullanici").innerText = "@" + username;
+    // Firebase başlat
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const database = getDatabase(app);
 
-      const puanEl = document.getElementById("puan");
-
-      function kullaniciPuanYukle() {
-        db.ref("kullanicilar/" + username + "/puan").once("value", (snap) => {
-          const puan = snap.val() || 0;
-          puanEl.innerText = "Puan: " + puan;
-        });
-      }
-
-      document.getElementById("toplaBtn").addEventListener("click", () => {
-        const ref = db.ref("kullanicilar/" + username + "/puan");
-        ref.transaction((puan) => {
-          return (puan || 0) + 1;
-        }).then(() => {
-          kullaniciPuanYukle();
-          alert("🪙 1 puan kazandın!");
-        });
+    // Kullanıcı verisini kaydet
+    function saveUserData(userId, username, chatId) {
+      return set(ref(database, 'users/' + userId), {
+        username: username,
+        chatId: chatId,
+        createdAt: new Date().toISOString()
       });
+    }
 
-      kullaniciPuanYukle();
-    </script>
-  </body>
+    // Telegram kullanıcı bilgisi al ve Firebase'e kaydet
+    window.onload = () => {
+      const tg = window.Telegram.WebApp;
+      const user = tg.initDataUnsafe.user;
+
+      const userId = user?.id;
+      const username = user?.username || "Anonim";
+      const chatId = tg.initDataUnsafe?.chat_instance;
+
+      saveUserData(userId, username, chatId)
+        .then(() => {
+          console.log("Kullanıcı Firebase'e kaydedildi!");
+        })
+        .catch((error) => {
+          console.error("Firebase'e kayıt hatası:", error);
+        });
+    };
+  </script>
+</body>
 </html>
-
-
-<script>
-  const tg = window.Telegram.WebApp;
-  const user = tg.initDataUnsafe?.user;
-
-  if (user && user.username) {
-    document.body.innerHTML += `<p>Merhaba, @${user.username}</p>`;
-  } else if (user && user.first_name) {
-    document.body.innerHTML += `<p>Merhaba, ${user.first_name}</p>`;
-  } else {
-    document.body.innerHTML += `<p>Anonim kullanıcı</p>`;
-  }
-
-  console.log("Kullanıcı:", user);
-</script>
-
-
-import { saveUserData } from './firebase.js';
