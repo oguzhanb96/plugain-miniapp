@@ -77,6 +77,13 @@
         document.addEventListener("DOMContentLoaded", function() {
             const collectBtn = document.getElementById("collectBtn");
             const statusText = document.getElementById("status");
+            const usernameText = document.getElementById("username");
+            const tokenCountText = document.getElementById("tokenCount");
+
+            // Kullanıcı adı ve token sayısını ekranda göstermek
+            if (usernameText) {
+                usernameText.innerText = "Kullanıcı: " + username;
+            }
 
             collectBtn.addEventListener("click", () => {
                 console.log("Butona tıklandı!");  // Butonun çalışıp çalışmadığını kontrol etmek için
@@ -88,17 +95,41 @@
                 incrementUserToken(userId)
                     .then(() => {
                         statusText.innerText = "🎉 Token kazanıldı!";
+                        updateTokenCount(userId);
                     })
                     .catch((error) => {
                         console.error("Token artırma hatası:", error);
                         statusText.innerText = "❌ Token artırılamadı.";
                     });
             });
+
+            // Token sayısını güncelleme
+            async function updateTokenCount(userId) {
+                const userRef = ref(database, 'users/' + userId);
+                const snapshot = await get(userRef);
+
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    const tokenCount = userData.token || 0;
+                    if (tokenCountText) {
+                        tokenCountText.innerText = "Token Sayısı: " + tokenCount;
+                    }
+                } else {
+                    console.error("Kullanıcı verisi bulunamadı!");
+                }
+            }
+
+            // Sayfa yüklendiğinde token sayısını güncelle
+            if (userId) {
+                updateTokenCount(userId);
+            }
         });
     </script>
 </head>
 <body>
     <h1>Telegram Mini App</h1>
+    <p id="username">Kullanıcı: Yükleniyor...</p>
+    <p id="tokenCount">Token Sayısı: Yükleniyor...</p>
     <button id="collectBtn">Token Topla</button>
     <p id="status">Durum: Bekliyor...</p>
 </body>
