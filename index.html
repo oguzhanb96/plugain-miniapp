@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Mini App</title>
-    <!-- Firebase SDK -->
+    <title>Token Toplama</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
@@ -23,94 +21,112 @@
         };
 
         // Firebase Başlatma
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        let app, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getDatabase(app);
+            console.log("Firebase başlatıldı.");
+        } catch (error) {
+            console.error("Firebase başlatma hatası:", error);
+            document.getElementById("status").textContent = "Durum: Firebase başlatılamadı!";
+        }
 
-        // Telegram Web App başlatma ve kullanıcı verilerini alma
-        const tg = window.Telegram.WebApp;
-        tg.initDataUnsafe = JSON.parse(tg.initData);
+        // Kullanıcı verilerini al ve sayfayı güncelle
+        const fetchAndDisplayUserData = async (username) => {
+            if (!db) return;
 
-        // Kullanıcı verilerini al ve işle
-        const handleUserData = async () => {
-            const user = tg.initDataUnsafe;
+            const userRef = ref(db, 'kullanicilar/' + username);
 
-            if (user) {
-                const username = user.username || "Bilinmeyen Kullanıcı";
-                const userRef = ref(db, 'kullanicilar/' + username);
+            try {
+                const snapshot = await get(userRef);
+                let currentTokens = 0;
 
-                try {
-                    const snapshot = await get(userRef);
-                    let currentTokens = 0;
-
-                    if (snapshot.exists()) {
-                        const userData = snapshot.val();
-                        currentTokens = userData.puan || 0;
-                    }
-
-                    // Kullanıcı arayüzünü güncelle
-                    document.getElementById("username").textContent = username;
-                    document.getElementById("token").textContent = currentTokens;
-                    document.getElementById("status").textContent = "Durum: Veri yüklendi.";
-
-                } catch (error) {
-                    console.error("Veri alınırken hata oluştu:", error);
-                    document.getElementById("status").textContent = "Durum: Veri alınırken hata oluştu!";
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    currentTokens = userData.puan || 0;
                 }
-            } else {
-                console.log("Kullanıcı verisi alınamadı.");
-                document.getElementById("status").textContent = "Durum: Kullanıcı verisi alınamadı!";
+
+                // Kullanıcı ismi ve token'ı güncelle
+                document.getElementById("username").textContent = username;
+                document.getElementById("token").textContent = currentTokens;
+                document.getElementById("status").textContent = "Durum: Veri yüklendi.";
+            } catch (error) {
+                console.error("Veri getirme hatası:", error);
+                document.getElementById("status").textContent = "Durum: Veri alınırken hata oluştu!";
             }
         };
 
-        // Token toplama işlemi
-        const handleCollectToken = async () => {
-            const user = tg.initDataUnsafe;
+        // Token toplama fonksiyonu
+        const collectToken = async (username) => {
+            if (!db) return;
+
+            const userRef = ref(db, 'kullanicilar/' + username);
+
+            try {
+                const snapshot = await get(userRef);
+                let currentTokens = 0;
+
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    currentTokens = userData.puan || 0;
+                }
+
+                const newTokenCount = currentTokens + 1;
+                await set(userRef, { puan: newTokenCount });
+
+                // Token sayısını güncelle
+                document.getElementById("token").textContent = newTokenCount;
+                document.getElementById("status").textContent = "Durum: Token toplandı!";
+            } catch (error) {
+                console.error("Token toplama hatası:", error);
+                document.getElementById("status").textContent = "Durum: Token toplama hatası!";
+            }
+        };
+
+        // Telegram WebApp başlatma ve kullanıcı verilerini alma
+        const initializeTelegram = () => {
+            try {
+                const tg = window.Telegram.WebApp;
+                tg.initDataUnsafe = JSON.parse(tg.initData);
+                return tg.initDataUnsafe;
+            } catch (error) {
+                console.error("Telegram başlatma hatası:", error);
+                document.getElementById("status").textContent = "Durum: Telegram başlatılamadı!";
+                return null;
+            }
+        };
+
+        // Sayfa yüklendiğinde yapılacak işlemler
+        window.onload = () => {
+            const user = initializeTelegram();
 
             if (user && user.username) {
-                const username = user.username;
-                const userRef = ref(db, 'kullanicilar/' + username);
-
-                try {
-                    const snapshot = await get(userRef);
-                    let currentTokens = 0;
-
-                    if (snapshot.exists()) {
-                        const userData = snapshot.val();
-                        currentTokens = userData.puan || 0;
-                    }
-
-                    const newTokenCount = currentTokens + 1;
-                    await set(userRef, { puan: newTokenCount });
-
-                    document.getElementById("token").textContent = newTokenCount;
-                    document.getElementById("status").textContent = "Durum: Token toplandı!";
-
-                } catch (error) {
-                    console.error("Token toplama hatası:", error);
-                    document.getElementById("status").textContent = "Durum: Token toplama hatası!";
-                }
+                document.getElementById("status").textContent = "Durum: Kullanıcı adı alındı...";
+                fetchAndDisplayUserData(user.username);
             } else {
                 console.log("Kullanıcı adı alınamadı.");
                 document.getElementById("status").textContent = "Durum: Kullanıcı adı alınamadı!";
             }
+
+            // Token toplama işlemi
+            document.getElementById("collect").addEventListener("click", () => {
+                if (user && user.username) {
+                    collectToken(user.username);
+                } else {
+                    console.log("Kullanıcı adı alınamadı.");
+                    document.getElementById("status").textContent = "Durum: Kullanıcı adı alınamadı!";
+                }
+            });
         };
-
-        // Sayfa yüklendiğinde kullanıcı verilerini yükle
-        window.onload = handleUserData;
-
-        // Token Topla butonuna tıklama işlemi
-        document.getElementById("collect").addEventListener("click", handleCollectToken);
     </script>
 </head>
-
 <body>
-    <div>
+    <div id="app">
         <h1>Telegram Mini App</h1>
-        <p><strong>Kullanıcı:</strong> <span id="username">Yükleniyor...</span></p>
-        <p><strong>Token Sayısı:</strong> <span id="token">Yükleniyor...</span></p>
+        <p>Kullanıcı: <span id="username">Yükleniyor...</span></p>
+        <p>Token Sayısı: <span id="token">Yükleniyor...</span></p>
         <button id="collect">Token Topla</button>
-        <p id="status">Durum: Bekleniyor...</p>
+        <p id="status">Durum: Bekliyor...</p>
     </div>
 </body>
-
 </html>
