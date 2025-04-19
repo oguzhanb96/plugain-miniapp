@@ -32,4 +32,5 @@ export function saveUserData(userId, username, chatId) {
 
 
 
+
 Add firebase.js to initialize Firebase and save user data
