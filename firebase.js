@@ -7,7 +7,7 @@
     <script type="module">
         // Firebase SDK importları
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+        import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
 
         // Firebase yapılandırma
         const firebaseConfig = {
@@ -57,14 +57,20 @@
         async function incrementUserToken(userId) {
           const userRef = ref(database, 'users/' + userId);
           const snapshot = await get(userRef);
+          
+          // Kullanıcı verilerini alalım
           const userData = snapshot.val();
-          const currentToken = userData?.token || 0;
+          if (userData) {
+            const currentToken = userData.token || 0;
 
-          // Token'ı 1 artırıyoruz
-          return set(userRef, {
-            ...userData,
-            token: currentToken + 1
-          });
+            // Token'ı 1 artırıyoruz
+            return update(userRef, {
+              token: currentToken + 1
+            });
+          } else {
+            console.error("Kullanıcı verisi bulunamadı!");
+            return Promise.reject("Kullanıcı verisi bulunamadı");
+          }
         }
 
         // Butona tıklama olayı
