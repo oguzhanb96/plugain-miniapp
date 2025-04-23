@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr" style="width: 100vw; min-height: 100vh; height: 100%; margin: 0; padding: 0; overflow-x: hidden;">
+<html lang="en" style="width: 100vw; min-height: 100vh; height: 100%; margin: 0; padding: 0; overflow-x: hidden;">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Plugain - Reklam İzle</title>
+  <title>Plugain - Watch Ad</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
@@ -127,6 +127,20 @@
       transform: scale(1.1);
     }
 
+    #login-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      padding: 0;
+      margin-right: 6px;
+    }
+
+    #login-btn svg {
+      display: block;
+    }
+
     @media (max-width: 500px) {
       .container {
         margin: 20px;
@@ -146,16 +160,21 @@
 </head>
 <body>
   <div class="topbar">
-    <span><strong>PlugainCoin:</strong> <span id="plugain-coin">0</span></span>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button id="login-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 0 6px; color: var(--accent-color);" title="Login">
+        <svg height="22" viewBox="0 0 24 24" width="22" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M12 14c-4 0-7 2-7 4v2h14v-2c0-2-3-4-7-4z"/></svg>
+      </button>
+      <span><strong>PlugainCoin:</strong> <span id="plugain-coin">0</span></span>
+    </div>
     <button id="dark-toggle">🌙</button>
   </div>
   <div class="container">
-    <h2>🎥 Reklam İzle ve Puan Kazan</h2>
-    <p><strong>Kullanıcı Adı:</strong> <span id="user-name">Yükleniyor...</span></p>
-    <p><strong>Tıklama Sayısı:</strong> <span id="click-count">Yükleniyor...</span></p>
-    <p><strong>Puanlarınız:</strong> <span id="user-points">Yükleniyor...</span></p>
-    <button id="watch-ad">Puan Kazan</button>
-    <button id="rewarded-ad" style="margin-top:16px;">Reklam İzle</button>
+    <h2>🎥 Watch Ad and Earn Points</h2>
+    <p><strong>Username:</strong> <span id="user-name">Loading...</span></p>
+    <p><strong>Click Count:</strong> <span id="click-count">Loading...</span></p>
+    <p><strong>Your Points:</strong> <span id="user-points">Loading...</span></p>
+    <button id="watch-ad">Earn Points</button>
+    <button id="rewarded-ad" style="margin-top:16px;">Watch Ad</button>
     <p id="countdown"></p>
   </div>
   <!-- Reklam SDK Scripti (show_9248782 için) -->
@@ -183,7 +202,7 @@
 
       const user = tg.initDataUnsafe?.user;
       if (!user) {
-        document.body.innerHTML = "<h2 style='text-align:center;'>Kullanıcı ID'si alınamadı.<br>Lütfen Telegram Mini App üzerinden tekrar giriş yapın.</h2>";
+        document.body.innerHTML = "<h2 style='text-align:center;'>User ID could not be obtained.<br>Please re-enter through Telegram Mini App.</h2>";
         return;
       }
 
@@ -229,7 +248,7 @@
           const h = String(Math.floor(distance / (1000 * 60 * 60))).padStart(2, "0");
           const m = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, "0");
           const s = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, "0");
-          countdownEl.textContent = `Tekrar puan kazanmak için: ${h}:${m}:${s}`;
+          countdownEl.textContent = `Wait to earn points again: ${h}:${m}:${s}`;
           setTimeout(update, 1000);
         }
         update();
@@ -260,7 +279,7 @@
         watchBtn.disabled = true;
         updateCountdown(new Date(Date.now() + 86400000));
 
-        alert('Tebrikler! Puan kazandınız. 24 saat sonra tekrar deneyin.');
+        alert('Congratulations! You earned points. Try again in 24 hours.');
       });
 
       rewardedBtn.addEventListener("click", async () => {
@@ -283,7 +302,7 @@
           document.getElementById("user-points").textContent = newPoints;
           document.getElementById("plugain-coin").textContent = newCoin;
 
-          alert('Reklam izlediniz ve puan kazandınız!');
+          alert('You watched the ad and earned points!');
         });
       });
 
@@ -322,8 +341,8 @@
   </script>
   <!-- Alt sayfa butonları başlangıç -->
   <nav class="bottom-nav">
-    <button onclick="location.href='index.html'" class="nav-btn">Main</button>
     <button onclick="location.href='page2.html'" class="nav-btn">Crypto</button>
+    <button onclick="location.href='index.html'" class="nav-btn">Main</button>
     <button onclick="location.href='page3.html'" class="nav-btn">Future</button>
   </nav>
   <style>
