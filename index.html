@@ -59,7 +59,7 @@
     margin: 10px 0;
   }
 
-  #watch-ad, #open-ad {
+  #watch-ad {
     background-color: var(--accent-color);
     color: white;
     border: none;
@@ -71,7 +71,7 @@
     margin-top: 10px;
   }
 
-  #watch-ad:hover, #open-ad:hover {
+  #watch-ad:hover {
     background-color: #7e33e4;
     transform: scale(1.05);
   }
@@ -111,7 +111,7 @@
     h2 {
       font-size: 1.3rem;
     }
-    #watch-ad, #open-ad {
+    #watch-ad {
       width: 100%;
     }
   }
@@ -122,29 +122,17 @@
     <span><strong>PlugainCoin:</strong> <span id="plugain-coin">0</span></span>
     <button id="dark-toggle">🌙</button>
   </div>
-  <!-- Reklam İzle Butonu -->
-  <button id="reklamButonu" style="margin: 30px auto; display: block; padding: 12px 32px; font-size: 1.1em; background: var(--accent-color); color: #fff; border: none; border-radius: 8px; cursor: pointer;">Reklam İzle</button>
   <div class="container">
     <h2>🎥 Reklam İzle ve Puan Kazan</h2>
     <p><strong>Kullanıcı Adı:</strong> <span id="user-name">Yükleniyor...</span></p>
     <p><strong>Tıklama Sayısı:</strong> <span id="click-count">Yükleniyor...</span></p>
     <p><strong>Puanlarınız:</strong> <span id="user-points">Yükleniyor...</span></p>
-    <button id="watch-ad">Puan Kazan</button>
+    <button id="watch-ad">Reklam İzle ve Puan Kazan</button>
     <p id="countdown"></p>
-    <!-- ✅ Yeni: Reklam İzle Butonu -->
-    <button id="open-ad">Reklam İzle</button>
   </div>
 
   <!-- Reklam SDK Scripti (show_9248782 için) -->
   <script src='//whephiwums.com/sdk.js' data-zone='9248782' data-sdk='show_9248782'></script>
-
-  <script>
-    document.getElementById('reklamButonu').onclick = function() {
-      show_9248782().then(() => {
-        alert('You have seen an ad!');
-      });
-    }
-  </script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
@@ -228,29 +216,28 @@
       }
 
       watchBtn.addEventListener("click", async () => {
-        const newClickCount = userData.clickCount + 1;
-        const newPoints = userData.points + 10;
-        const newCoin = Math.floor(newPoints / 100);
+        // Önce reklamı göster
+        show_9248782().then(async () => {
+          // Reklam izlendikten sonra puan işlemlerini yap
+          const newClickCount = userData.clickCount + 1;
+          const newPoints = userData.points + 10;
+          const newCoin = Math.floor(newPoints / 100);
 
-        await update(userRef, {
-          clickCount: newClickCount,
-          points: newPoints,
-          plugainCoin: newCoin,
-          lastClick: new Date().toISOString()
+          await update(userRef, {
+            clickCount: newClickCount,
+            points: newPoints,
+            plugainCoin: newCoin,
+            lastClick: new Date().toISOString()
+          });
+
+          document.getElementById("click-count").textContent = newClickCount;
+          document.getElementById("user-points").textContent = newPoints;
+          document.getElementById("plugain-coin").textContent = newCoin;
+          watchBtn.disabled = true;
+          updateCountdown(new Date(Date.now() + 86400000));
+
+          alert('Tebrikler! Reklam izlediniz ve puan kazandınız.');
         });
-
-        document.getElementById("click-count").textContent = newClickCount;
-        document.getElementById("user-points").textContent = newPoints;
-        document.getElementById("plugain-coin").textContent = newCoin;
-        watchBtn.disabled = true;
-        updateCountdown(new Date(Date.now() + 86400000));
-
-        tg.openLink("https://www.youtube.com");
-      });
-
-      // ✅ Yeni Buton: Reklam İzle (adsgram.ai açar)
-      document.getElementById("open-ad").addEventListener("click", () => {
-        tg.openLink("https://uvoonaix.top/4/9250644");
       });
 
       const darkToggle = document.getElementById("dark-toggle");
