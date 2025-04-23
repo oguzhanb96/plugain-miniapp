@@ -258,9 +258,29 @@
         alert('Tebrikler! Puan kazandınız. 24 saat sonra tekrar deneyin.');
       });
 
-      rewardedBtn.addEventListener("click", () => {
-        show_9248782().then(() => {
-          alert('Reklam izlediniz!');
+      rewardedBtn.addEventListener("click", async () => {
+        show_9248782().then(async () => {
+          // Reklam izlendikten sonra puan işlemlerini yap
+          const newClickCount = userData.clickCount + 1;
+          const newPoints = userData.points + 10;
+          const newCoin = Math.floor(newPoints / 100);
+
+          await update(userRef, {
+            clickCount: newClickCount,
+            points: newPoints,
+            plugainCoin: newCoin
+          });
+
+          // userData'yı güncelle
+          userData.clickCount = newClickCount;
+          userData.points = newPoints;
+          userData.plugainCoin = newCoin;
+
+          document.getElementById("click-count").textContent = newClickCount;
+          document.getElementById("user-points").textContent = newPoints;
+          document.getElementById("plugain-coin").textContent = newCoin;
+
+          alert('Reklam izlediniz ve puan kazandınız!');
         });
       });
 
