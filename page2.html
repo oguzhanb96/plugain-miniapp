@@ -136,7 +136,7 @@
       try {
         const res = await fetch('https://api.coinpaprika.com/v1/tickers?limit=5');
         const data = await res.json();
-        let html = `<h2 style='color:var(--accent-color);margin-bottom:24px;'>Top 5 Coins</h2>`;
+        let html = `<h2 style='color:#fff;margin-bottom:24px;'>Top 5 Coins</h2>`;
         html += `<table style='margin:0 auto;background:var(--card-bg);border-radius:10px;padding:18px 24px;box-shadow:0 2px 10px rgba(0,0,0,0.07);'>`;
         html += `<tr><th style='padding:8px 16px;'>Name</th><th style='padding:8px 16px;'>Symbol</th><th style='padding:8px 16px;'>Price (USD)</th></tr>`;
         data.slice(0, 5).forEach(coin => {
