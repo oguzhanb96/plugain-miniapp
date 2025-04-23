@@ -109,7 +109,29 @@
     </div>
     <button id="dark-toggle">🌙</button>
   </div>
-  <!-- Empty content for now -->
+  <!-- Coinpaprika API'den örnek veri çekmek için script -->
+  <div id="crypto-content" style="padding:40px 0 80px 0;text-align:center;"></div>
+  <script>
+    async function fetchCoinPaprika() {
+      const contentDiv = document.getElementById('crypto-content');
+      contentDiv.innerHTML = '<span style="color:var(--accent-color);">Loading top 5 coins...</span>';
+      try {
+        const res = await fetch('https://api.coinpaprika.com/v1/tickers?limit=5');
+        const data = await res.json();
+        let html = `<h2 style='color:var(--accent-color);margin-bottom:24px;'>Top 5 Coins</h2>`;
+        html += `<table style='margin:0 auto;background:var(--card-bg);border-radius:10px;padding:18px 24px;box-shadow:0 2px 10px rgba(0,0,0,0.07);'>`;
+        html += `<tr><th style='padding:8px 16px;'>Name</th><th style='padding:8px 16px;'>Symbol</th><th style='padding:8px 16px;'>Price (USD)</th></tr>`;
+        data.slice(0, 5).forEach(coin => {
+          html += `<tr><td style='padding:8px 16px;'>${coin.name}</td><td style='padding:8px 16px;'>${coin.symbol}</td><td style='padding:8px 16px;'>$${coin.quotes.USD.price.toFixed(2)}</td></tr>`;
+        });
+        html += `</table>`;
+        contentDiv.innerHTML = html;
+      } catch (e) {
+        contentDiv.innerHTML = '<span style="color:red;">Failed to load data.</span>';
+      }
+    }
+    document.addEventListener('DOMContentLoaded', fetchCoinPaprika);
+  </script>
   <nav class="bottom-nav">
     <button onclick="location.href='page2.html'" class="nav-btn">Crypto</button>
     <button onclick="location.href='index.html'" class="nav-btn">Main</button>
