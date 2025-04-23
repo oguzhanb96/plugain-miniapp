@@ -25,11 +25,9 @@ html, body {
 
 body {
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-  background: linear-gradient(270deg, #667eea, #764ba2, #43cea2, #185a9d, #667eea);
-  background-size: 400% 400%;
-  animation: gradientBG 12s ease-in-out infinite;
+  background: linear-gradient(135deg, var(--bg) 0%, #764ba2 100%);
   min-height: 100vh;
-  color: #23272f;
+  color: var(--text);
   width: 100vw;
   box-sizing: border-box;
   overflow-x: hidden;
@@ -76,7 +74,7 @@ body {
 }
 
 .brand-title {
-  display: none !important;
+  display: inline;
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 0.5px;
