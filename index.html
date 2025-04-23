@@ -5,216 +5,167 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Plugain - Reklam İzle</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="three.r134.min.js"></script>
+  <script src="vanta.net.min.js"></script>
   <style>
-  :root {
-    --bg-color: #f9f9f9;
-    --text-color: #222;
-    --accent-color: #6200ea;
-    --card-bg: #ffffff;
-  }
-
-  body.dark-mode {
-    --bg-color: #121212;
-    --text-color: #eee;
-    --card-bg: #1e1e1e;
-  }
-
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: "Segoe UI", sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    transition: background 0.3s, color 0.3s;
-  }
-
-  .main-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 10px 20px;
-    border-bottom: 1px solid #ccc;
-    position: relative;
-  }
-
-  .brand-area {
-    display: flex;
-    align-items: center;
-  }
-
-  .brand-icon {
-    font-size: 1.5rem;
-    margin-right: 10px;
-  }
-
-  .brand-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-
-  .header-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--accent-color);
-    transition: transform 0.2s ease, color 0.3s ease;
-    padding: 5px;
-    border-radius: 8px;
-  }
-
-  .header-btn:hover {
-    background-color: rgba(98, 0, 234, 0.1);
-    transform: scale(1.1);
-  }
-
-  .plugain-coin-fixed {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--card-bg);
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
-    backdrop-filter: blur(10px);
-  }
-
-  .main-content {
-    max-width: 400px;
-    margin: 40px auto;
-    padding: 20px;
-    border-radius: 16px;
-    text-align: center;
-    transition: background 0.3s;
-  }
-
-  .glass {
-    background-color: var(--card-bg);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
-    backdrop-filter: blur(10px);
-  }
-
-  .score-card {
-    background-color: var(--card-bg);
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
-    backdrop-filter: blur(10px);
-  }
-
-  .score-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-
-  .score-label {
-    font-weight: bold;
-  }
-
-  .score-value {
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-
-  .user-row {
-    margin-bottom: 10px;
-  }
-
-  .action-buttons {
-    margin-top: 20px;
-  }
-
-  .primary-btn {
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    border-radius: 30px;
-    padding: 15px 25px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.3s;
-    margin-bottom: 16px;
-  }
-
-  .primary-btn:hover {
-    background-color: #7e33e4;
-    transform: scale(1.05);
-  }
-
-  .secondary-btn {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 30px;
-    padding: 15px 25px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.3s;
-  }
-
-  .secondary-btn:hover {
-    background-color: #3e8e41;
-    transform: scale(1.05);
-  }
-
-  #countdown {
-    margin-top: 15px;
-    font-weight: bold;
-    color: var(--accent-color);
-  }
-
-  @media (max-width: 500px) {
-    .main-content {
-      margin: 20px;
-      padding: 15px;
+    :root {
+      --bg-color: #f9f9f9;
+      --text-color: #222;
+      --accent-color: #6200ea;
+      --card-bg: #ffffff;
     }
-    .plugain-coin-fixed {
-      top: 5px;
-      right: 10px;
+
+    body.dark-mode {
+      --bg-color: #121212;
+      --text-color: #eee;
+      --card-bg: #1e1e1e;
     }
-  }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    #vanta-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: var(--card-bg);
+      border-bottom: 1px solid #ccc;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 40px auto;
+      background-color: var(--card-bg);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+      text-align: center;
+      transition: background 0.3s;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: var(--accent-color);
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin: 10px 0;
+    }
+
+    #watch-ad {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 15px 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+      margin-top: 10px;
+    }
+
+    #watch-ad:hover {
+      background-color: #7e33e4;
+      transform: scale(1.05);
+    }
+
+    #watch-ad:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    #rewarded-ad {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 15px 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+      margin-top: 16px;
+    }
+
+    #rewarded-ad:hover {
+      background-color: #7e33e4;
+      transform: scale(1.05);
+    }
+
+    #countdown {
+      margin-top: 15px;
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+
+    #dark-toggle {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--accent-color);
+      transition: transform 0.2s ease, color 0.3s ease;
+      padding: 5px;
+      border-radius: 8px;
+    }
+
+    #dark-toggle:hover {
+      background-color: rgba(98, 0, 234, 0.1);
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+      h2 {
+        font-size: 1.3rem;
+      }
+      #watch-ad {
+        width: 100%;
+      }
+      #rewarded-ad {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-  <header class="main-header">
-    <div class="brand-area">
-      <span class="brand-icon">🚀</span>
-    </div>
-    <button class="header-btn" id="darkModeToggle" title="Tema Değiştir">🌙</button>
-    <div id="plugain-coin-fixed" class="plugain-coin-fixed">
-      <span class="score-label">PlugainCoin</span>
-      <span id="plugain-coin">0</span>
-    </div>
-  </header>
-  <main class="main-content">
-    <section class="score-card">
-      <div class="score-row" style="display:none">
-        <span class="score-label">PlugainCoin</span>
-        <span id="plugain-coin-old" class="score-value">0</span>
-      </div>
-      <div class="user-row">
-        <span>Kullanıcı:</span> <span id="user-name">Yükleniyor...</span>
-      </div>
-      <div class="user-row">
-        <span>Tıklama:</span> <span id="click-count">Yükleniyor...</span>
-      </div>
-      <div class="user-row">
-        <span>Puan:</span> <span id="user-points">Yükleniyor...</span>
-      </div>
-    </section>
-    <section class="action-buttons">
-      <button id="watch-ad" class="primary-btn">Puan Kazan</button>
-      <button id="rewarded-ad" class="secondary-btn">Reklam İzle</button>
-      <p id="countdown"></p>
-    </section>
-  </main>
+  <div id="vanta-bg"></div>
+  <div class="topbar">
+    <span><strong>PlugainCoin:</strong> <span id="plugain-coin">0</span></span>
+    <button id="dark-toggle">🌙</button>
+  </div>
+  <div class="container">
+    <h2>🎥 Reklam İzle ve Puan Kazan</h2>
+    <p><strong>Kullanıcı Adı:</strong> <span id="user-name">Yükleniyor...</span></p>
+    <p><strong>Tıklama Sayısı:</strong> <span id="click-count">Yükleniyor...</span></p>
+    <p><strong>Puanlarınız:</strong> <span id="user-points">Yükleniyor...</span></p>
+    <button id="watch-ad">Puan Kazan</button>
+    <button id="rewarded-ad" style="margin-top:16px;">Reklam İzle</button>
+    <p id="countdown"></p>
+  </div>
+
   <!-- Reklam SDK Scripti (show_9248782 için) -->
   <script src='//whephiwums.com/sdk.js' data-zone='9248782' data-sdk='show_9248782'></script>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import {
@@ -223,7 +174,6 @@
       get,
       set,
       update,
-      onValue
     } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
     const firebaseConfig = {
@@ -302,26 +252,25 @@
         const newClickCount = userData.clickCount + 1;
         const newPoints = userData.points + 10;
         const newCoin = Math.floor(newPoints / 100);
+
         await update(userRef, {
           clickCount: newClickCount,
           points: newPoints,
           plugainCoin: newCoin,
           lastClick: new Date().toISOString()
         });
-        userData.clickCount = newClickCount;
-        userData.points = newPoints;
-        userData.plugainCoin = newCoin;
+
         document.getElementById("click-count").textContent = newClickCount;
         document.getElementById("user-points").textContent = newPoints;
         document.getElementById("plugain-coin").textContent = newCoin;
         watchBtn.disabled = true;
         updateCountdown(new Date(Date.now() + 86400000));
+
         alert('Tebrikler! Puan kazandınız. 24 saat sonra tekrar deneyin.');
       });
 
       rewardedBtn.addEventListener("click", async () => {
         show_9248782().then(async () => {
-          // Reklam izlendikten sonra puan işlemlerini yap
           const newClickCount = userData.clickCount + 1;
           const newPoints = userData.points + 10;
           const newCoin = Math.floor(newPoints / 100);
@@ -332,7 +281,6 @@
             plugainCoin: newCoin
           });
 
-          // userData'yı güncelle
           userData.clickCount = newClickCount;
           userData.points = newPoints;
           userData.plugainCoin = newCoin;
@@ -345,7 +293,7 @@
         });
       });
 
-      const darkToggle = document.getElementById("darkModeToggle");
+      const darkToggle = document.getElementById("dark-toggle");
 
       function updateDarkIcon() {
         darkToggle.textContent = document.body.classList.contains("dark-mode") ? "🌞" : "🌙";
@@ -357,6 +305,18 @@
       });
 
       updateDarkIcon();
+    });
+  </script>
+  <script>
+    VANTA.NET({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.00,
+      scaleMobile: 1.00
     });
   </script>
 </body>

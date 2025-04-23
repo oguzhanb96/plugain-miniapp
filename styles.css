@@ -1,5 +1,5 @@
 :root {
-  --bg: #667eea;
+  --bg: url('https://w7.pngwing.com/pngs/360/33/png-transparent-modern-minimalist-triangle-violet-background-shading-geometry-shading-violet-thumbnail.png'); /* Buraya görsel URL'si ekleyin */
   --text: #23272f;
   --card: #fff;
   --button: linear-gradient(90deg, #667eea, #764ba2);
@@ -8,7 +8,7 @@
 }
 
 body.dark {
-  --bg: #121212;
+  --bg: url('https://w7.pngwing.com/pngs/891/227/png-transparent-modern-abstract-background-space-background-thumbnail.png'); /* Karanlık mod için farklı bir görsel URL'si ekleyin */
   --text: #f1f1f1;
   --card: #1e1e1e;
   --button: linear-gradient(90deg, #27ae60, #219150);
@@ -25,7 +25,9 @@ html, body {
 
 body {
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-  background: linear-gradient(135deg, var(--bg) 0%, #764ba2 100%);
+  background: var(--bg); /* Arka plan görseli */
+  background-size: cover; /* Görseli ekranı kaplayacak şekilde boyutlandırır */
+  background-position: center; /* Görseli ortalar */
   min-height: 100vh;
   color: var(--text);
   width: 100vw;
@@ -33,35 +35,15 @@ body {
   overflow-x: hidden;
 }
 
-@keyframes gradientBG {
-  0% {background-position: 0% 50%;}
-  50% {background-position: 100% 50%;}
-  100% {background-position: 0% 50%;}
-}
-
-body::-webkit-scrollbar {
-  width: 8px;
-  background: transparent;
-}
-body::-webkit-scrollbar-thumb {
-  background: rgba(102,126,234,0.18);
-  border-radius: 6px;
-}
-body {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(102,126,234,0.18) transparent;
-}
-
 .main-header {
   width: 100%;
-  max-width: 600px;
+  max-width: 430px;
   margin: 0 auto;
-  padding: 16px 0 10px 0;
+  padding: 32px 0 16px 0;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   background: transparent;
-  position: relative;
 }
 
 .brand-area {
@@ -75,26 +57,9 @@ body {
 }
 
 .brand-title {
-  display: inline;
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 0.5px;
-}
-
-.plugain-coin-fixed {
-  position: absolute;
-  top: 12px;
-  left: 16px;
-  display: flex;
-  align-items: center;
-  background: var(--card);
-  padding: 8px 14px;
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  font-weight: 600;
-  gap: 8px;
-  font-size: 1.08rem;
-  z-index: 10;
 }
 
 .header-btn {
@@ -115,13 +80,12 @@ body {
 
 .main-content {
   width: 100%;
-  max-width: 420px;
-  margin: 24px auto 0 auto;
-  padding: 16px 8px;
-  border-radius: 16px;
+  max-width: 430px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 28px;
   box-sizing: border-box;
 }
 
@@ -129,9 +93,9 @@ body {
   background: var(--card);
   border-radius: 18px;
   box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-  padding: 18px 12px 12px 12px;
+  padding: 26px 22px 18px 22px;
   width: 100%;
-  margin-top: 0;
+  margin-top: 24px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -177,62 +141,4 @@ body {
   letter-spacing: 0.5px;
   box-shadow: 0 2px 12px rgba(102,126,234,0.11);
   cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s, transform 0.13s;
-}
-
-.primary-btn:hover {
-  background: var(--button-hover);
-  box-shadow: 0 4px 20px rgba(102,126,234,0.13);
-  transform: translateY(-2px) scale(1.03);
-}
-
-.secondary-btn {
-  width: 100%;
-  padding: 13px 0;
-  background: #fff;
-  color: #764ba2;
-  border: 2px solid #764ba2;
-  border-radius: 14px;
-  font-size: 1.08rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(118,75,162,0.06);
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.13s;
-}
-
-.secondary-btn:hover {
-  background: #f3eaff;
-  color: var(--text);
-  box-shadow: 0 4px 16px rgba(118,75,162,0.10);
-  transform: translateY(-2px) scale(1.03);
-}
-
-#countdown {
-  font-size: 1.08rem;
-  font-weight: 500;
-  color: #764ba2;
-  margin-top: 6px;
-  text-align: center;
-}
-
-@media (max-width: 600px) {
-  .main-header {
-    max-width: 100vw;
-    padding-left: 0;
-    padding-right: 0;
-  }
-  .plugain-coin-fixed {
-    left: 6px;
-    top: 6px;
-    padding: 6px 10px;
-    font-size: 0.98rem;
-  }
-  .main-content {
-    max-width: 99vw;
-    padding: 6vw 2vw;
-  }
-  .score-card {
-    padding: 10px 2vw 8px 2vw;
-  }
-}
+  transition
