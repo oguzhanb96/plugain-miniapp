@@ -106,9 +106,15 @@
       <button id="login-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 0 6px; color: var(--accent-color);" title="Login">
         <svg height="22" viewBox="0 0 24 24" width="22" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M12 14c-4 0-7 2-7 4v2h14v-2c0-2-3-4-7-4z"/></svg>
       </button>
-      <span><strong>PlugainCoin:</strong> <span id="plugain-coin">0</span></span>
+      <span><strong>PlugainCoin:</strong> <span id="plugain-coin">0</span>
+        <button id="info-btn" aria-label="Info" style="background:none;border:none;padding:0 0 0 4px;vertical-align:middle;cursor:pointer;color:var(--accent-color);font-size:1.1em;">ⓘ</button>
+      </span>
     </div>
     <button id="dark-toggle">🌙</button>
+  </div>
+  <div id="info-balloon" style="display:none;position:absolute;z-index:100;background:#fff;color:#222;border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,0.18);padding:18px 24px;min-width:220px;max-width:320px;font-size:0.98rem;line-height:1.5;">
+    <button id="close-info" style="position:absolute;top:7px;right:10px;background:none;border:none;font-size:1.1em;cursor:pointer;color:#888;">&times;</button>
+    <div id="info-text">You can earn $1 for every 100 points.</div>
   </div>
   <div style="padding:40px 0 80px 0;text-align:center;position:relative;z-index:1;">
     <!-- Empty content for now -->
@@ -148,6 +154,30 @@
           btn.classList.add('active');
         }
       });
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Info balloon
+      var infoBtn = document.getElementById('info-btn');
+      var infoBalloon = document.getElementById('info-balloon');
+      var closeInfo = document.getElementById('close-info');
+      if(infoBtn && infoBalloon && closeInfo) {
+        infoBtn.addEventListener('click', function(e) {
+          var rect = infoBtn.getBoundingClientRect();
+          infoBalloon.style.display = 'block';
+          infoBalloon.style.top = (window.scrollY + rect.bottom + 8) + 'px';
+          infoBalloon.style.left = (rect.left + rect.width/2 - infoBalloon.offsetWidth/2) + 'px';
+        });
+        closeInfo.addEventListener('click', function() {
+          infoBalloon.style.display = 'none';
+        });
+        document.addEventListener('click', function(e) {
+          if(infoBalloon.style.display === 'block' && !infoBalloon.contains(e.target) && e.target !== infoBtn) {
+            infoBalloon.style.display = 'none';
+          }
+        });
+      }
     });
   </script>
 </body>
