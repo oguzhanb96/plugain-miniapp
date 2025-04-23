@@ -109,8 +109,25 @@
     </div>
     <button id="dark-toggle">🌙</button>
   </div>
-  <!-- Coinpaprika API'den örnek veri çekmek için script -->
-  <div id="crypto-content" style="padding:40px 0 80px 0;text-align:center;"></div>
+  <div id="vanta-bg" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;"></div>
+  <div id="crypto-content" style="padding:40px 0 80px 0;text-align:center;position:relative;z-index:1;"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+  <script>
+    function setVantaBg() {
+      if (window.VANTA) window.VANTA.NET({
+        el: "#vanta-bg",
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200.00,
+        minWidth: 200.00,
+        scale: 1.00,
+        scaleMobile: 1.00
+      });
+    }
+    document.addEventListener("DOMContentLoaded", setVantaBg);
+  </script>
   <script>
     async function fetchCoinPaprika() {
       const contentDiv = document.getElementById('crypto-content');
