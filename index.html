@@ -81,6 +81,23 @@
     cursor: not-allowed;
   }
 
+  #rewarded-ad {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 15px 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.3s;
+    margin-top: 16px;
+  }
+
+  #rewarded-ad:hover {
+    background-color: #7e33e4;
+    transform: scale(1.05);
+  }
+
   #countdown {
     margin-top: 15px;
     font-weight: bold;
@@ -114,6 +131,9 @@
     #watch-ad {
       width: 100%;
     }
+    #rewarded-ad {
+      width: 100%;
+    }
   }
   </style>
 </head>
@@ -127,7 +147,8 @@
     <p><strong>Kullanıcı Adı:</strong> <span id="user-name">Yükleniyor...</span></p>
     <p><strong>Tıklama Sayısı:</strong> <span id="click-count">Yükleniyor...</span></p>
     <p><strong>Puanlarınız:</strong> <span id="user-points">Yükleniyor...</span></p>
-    <button id="watch-ad">Reklam İzle ve Puan Kazan</button>
+    <button id="watch-ad">Puan Kazan</button>
+    <button id="rewarded-ad" style="margin-top:16px;">Reklam İzle</button>
     <p id="countdown"></p>
   </div>
 
@@ -187,6 +208,7 @@
       document.getElementById("plugain-coin").textContent = userData.plugainCoin;
 
       const watchBtn = document.getElementById("watch-ad");
+      const rewardedBtn = document.getElementById("rewarded-ad");
       const countdownEl = document.getElementById("countdown");
 
       function updateCountdown(targetTime) {
@@ -202,7 +224,7 @@
           const h = String(Math.floor(distance / (1000 * 60 * 60))).padStart(2, "0");
           const m = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, "0");
           const s = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, "0");
-          countdownEl.textContent = `Tekrar reklam izlemek için: ${h}:${m}:${s}`;
+          countdownEl.textContent = `Tekrar puan kazanmak için: ${h}:${m}:${s}`;
           setTimeout(update, 1000);
         }
         update();
@@ -216,27 +238,29 @@
       }
 
       watchBtn.addEventListener("click", async () => {
-        // Önce reklamı göster
-        show_9248782().then(async () => {
-          // Reklam izlendikten sonra puan işlemlerini yap
-          const newClickCount = userData.clickCount + 1;
-          const newPoints = userData.points + 10;
-          const newCoin = Math.floor(newPoints / 100);
+        const newClickCount = userData.clickCount + 1;
+        const newPoints = userData.points + 10;
+        const newCoin = Math.floor(newPoints / 100);
 
-          await update(userRef, {
-            clickCount: newClickCount,
-            points: newPoints,
-            plugainCoin: newCoin,
-            lastClick: new Date().toISOString()
-          });
+        await update(userRef, {
+          clickCount: newClickCount,
+          points: newPoints,
+          plugainCoin: newCoin,
+          lastClick: new Date().toISOString()
+        });
 
-          document.getElementById("click-count").textContent = newClickCount;
-          document.getElementById("user-points").textContent = newPoints;
-          document.getElementById("plugain-coin").textContent = newCoin;
-          watchBtn.disabled = true;
-          updateCountdown(new Date(Date.now() + 86400000));
+        document.getElementById("click-count").textContent = newClickCount;
+        document.getElementById("user-points").textContent = newPoints;
+        document.getElementById("plugain-coin").textContent = newCoin;
+        watchBtn.disabled = true;
+        updateCountdown(new Date(Date.now() + 86400000));
 
-          alert('Tebrikler! Reklam izlediniz ve puan kazandınız.');
+        alert('Tebrikler! Puan kazandınız. 24 saat sonra tekrar deneyin.');
+      });
+
+      rewardedBtn.addEventListener("click", () => {
+        show_9248782().then(() => {
+          alert('Reklam izlediniz!');
         });
       });
 
