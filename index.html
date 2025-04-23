@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" style="width: 100vw; min-height: 100vh; height: 100%; margin: 0; padding: 0; overflow-x: hidden;">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -19,9 +19,16 @@
       --card-bg: #1e1e1e;
     }
 
-    body {
+    body, html {
+      width: 100vw;
+      min-height: 100vh;
+      height: 100%;
       margin: 0;
       padding: 0;
+      overflow-x: hidden;
+    }
+
+    body {
       font-family: "Segoe UI", sans-serif;
       color: var(--text-color);
       transition: background 0.3s, color 0.3s;
