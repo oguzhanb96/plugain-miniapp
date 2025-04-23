@@ -44,7 +44,7 @@
       left: 0;
       bottom: 0;
       width: 100vw;
-      background: rgba(255,255,255,0.85);
+      background: #111;
       display: flex;
       justify-content: space-around;
       align-items: center;
@@ -63,11 +63,21 @@
       font-size: 1rem;
       font-weight: 500;
       cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      opacity: 0.85;
+      box-shadow: none;
+    }
+    .bottom-nav .nav-btn.active, .bottom-nav .nav-btn:focus {
+      background: #fff;
+      color: var(--accent-color);
+      opacity: 1;
+      box-shadow: 0 0 0 2px var(--accent-color);
+      font-weight: bold;
     }
     .bottom-nav .nav-btn:hover {
       background: #7e33e4;
       transform: translateY(-2px) scale(1.04);
+      color: #fff;
     }
     @media (max-width: 500px) {
       .bottom-nav .nav-btn {
@@ -105,5 +115,19 @@
     <button onclick="location.href='index.html'" class="nav-btn">Main</button>
     <button onclick="location.href='page3.html'" class="nav-btn">Future</button>
   </nav>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var navBtns = document.querySelectorAll('.bottom-nav .nav-btn');
+      navBtns.forEach(function(btn) {
+        if(
+          (btn.textContent === 'Main' && window.location.pathname.endsWith('index.html')) ||
+          (btn.textContent === 'Crypto' && window.location.pathname.endsWith('page2.html')) ||
+          (btn.textContent === 'Future' && window.location.pathname.endsWith('page3.html'))
+        ) {
+          btn.classList.add('active');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
