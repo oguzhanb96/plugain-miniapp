@@ -165,9 +165,8 @@
   <header class="main-header">
     <div class="brand-area">
       <span class="brand-icon">🚀</span>
-      <span class="brand-title">Plugain MiniApp</span>
     </div>
-    <button id="dark-toggle" class="header-btn" title="Tema Değiştir">🌗</button>
+    <button class="header-btn" id="darkModeToggle" title="Tema Değiştir">🌙</button>
   </header>
   <main class="main-content">
     <section class="score-card">
@@ -323,10 +322,10 @@
         });
       });
 
-      const darkToggle = document.getElementById("dark-toggle");
+      const darkToggle = document.getElementById("darkModeToggle");
 
       function updateDarkIcon() {
-        darkToggle.textContent = document.body.classList.contains("dark-mode") ? "🌞" : "🌗";
+        darkToggle.textContent = document.body.classList.contains("dark-mode") ? "🌞" : "🌙";
       }
 
       darkToggle.addEventListener("click", () => {

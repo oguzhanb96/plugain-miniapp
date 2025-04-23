@@ -25,19 +25,22 @@ html, body {
 
 body {
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-  /* Animated gradient background */
   background: linear-gradient(270deg, #667eea, #764ba2, #43cea2, #185a9d, #667eea);
-  background-size: 200% 200%;
-  animation: gradientBG 8s ease-in-out infinite;
+  background-size: 400% 400%;
+  animation: gradientBG 12s ease-in-out infinite;
   min-height: 100vh;
-  color: var(--text);
+  color: #23272f;
   width: 100vw;
   box-sizing: border-box;
   overflow-x: hidden;
-  /* Remove previous background video/image if any */
 }
 
-/* Hide horizontal scrollbar and style vertical one */
+@keyframes gradientBG {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
 body::-webkit-scrollbar {
   width: 8px;
   background: transparent;
@@ -49,12 +52,6 @@ body::-webkit-scrollbar-thumb {
 body {
   scrollbar-width: thin;
   scrollbar-color: rgba(102,126,234,0.18) transparent;
-}
-
-@keyframes gradientBG {
-  0% {background-position: 0% 50%;}
-  50% {background-position: 100% 50%;}
-  100% {background-position: 0% 50%;}
 }
 
 .main-header {
@@ -79,6 +76,7 @@ body {
 }
 
 .brand-title {
+  display: none !important;
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 0.5px;
