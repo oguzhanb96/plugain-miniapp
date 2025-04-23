@@ -54,13 +54,14 @@ body {
 
 .main-header {
   width: 100%;
-  max-width: 430px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 32px 0 16px 0;
+  padding: 16px 0 10px 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   background: transparent;
+  position: relative;
 }
 
 .brand-area {
@@ -78,6 +79,22 @@ body {
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 0.5px;
+}
+
+.plugain-coin-fixed {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  background: var(--card);
+  padding: 8px 14px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  font-weight: 600;
+  gap: 8px;
+  font-size: 1.08rem;
+  z-index: 10;
 }
 
 .header-btn {
@@ -98,12 +115,13 @@ body {
 
 .main-content {
   width: 100%;
-  max-width: 430px;
-  margin: 0 auto;
+  max-width: 420px;
+  margin: 24px auto 0 auto;
+  padding: 16px 8px;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 28px;
   box-sizing: border-box;
 }
 
@@ -111,9 +129,9 @@ body {
   background: var(--card);
   border-radius: 18px;
   box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-  padding: 26px 22px 18px 22px;
+  padding: 18px 12px 12px 12px;
   width: 100%;
-  margin-top: 24px;
+  margin-top: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -198,14 +216,23 @@ body {
   text-align: center;
 }
 
-@media (max-width: 500px) {
-  .main-header, .main-content, .score-card {
+@media (max-width: 600px) {
+  .main-header {
     max-width: 100vw;
-    padding-left: 2vw;
-    padding-right: 2vw;
-    box-sizing: border-box;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .plugain-coin-fixed {
+    left: 6px;
+    top: 6px;
+    padding: 6px 10px;
+    font-size: 0.98rem;
+  }
+  .main-content {
+    max-width: 99vw;
+    padding: 6vw 2vw;
   }
   .score-card {
-    padding: 18px 2vw 12px 2vw;
+    padding: 10px 2vw 8px 2vw;
   }
 }
