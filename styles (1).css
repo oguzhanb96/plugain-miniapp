@@ -1,0 +1,111 @@
+:root {
+  --bg: #ffffff;
+  --text: #333;
+  --card: #fafafa;
+  --button: #007bff;
+  --button-hover: #0056b3;
+  --coin-bg: #f7f7f7;
+}
+
+body.dark {
+  --bg: #121212;
+  --text: #f1f1f1;
+  --card: #1e1e1e;
+  --button: #27ae60;
+  --button-hover: #219150;
+  --coin-bg: #2a2a2a;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.container {
+  background: var(--card);
+  padding: 25px;
+  border-radius: 20px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  text-align: center;
+  position: relative;
+}
+
+.toggle-mode {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: transparent;
+  border: 2px solid var(--text);
+  color: var(--text);
+  padding: 5px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+.toggle-mode:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coins {
+  background-color: var(--coin-bg);
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #27ae60;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 16px;
+}
+
+#user-info {
+  text-align: left;
+  margin-top: 20px;
+  font-size: 15px;
+  line-height: 1.8;
+  background: var(--coin-bg);
+  padding: 15px;
+  border-radius: 12px;
+}
+
+button#watch-ad {
+  background: var(--button);
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 14px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 25px;
+  transition: transform 0.2s ease, background 0.3s ease;
+  width: 100%;
+}
+
+button#watch-ad:hover {
+  background: var(--button-hover);
+  transform: translateY(-2px);
+}
+
+button#watch-ad:active {
+  transform: scale(0.98);
+}

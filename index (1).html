@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Plugain - Reklam İzle</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+  :root {
+    --bg-color: #f9f9f9;
+    --text-color: #222;
+    --accent-color: #6200ea;
+    --card-bg: #ffffff;
+  }
+
+  body.dark-mode {
+    --bg-color: #121212;
+    --text-color: #eee;
+    --card-bg: #1e1e1e;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background 0.3s, color 0.3s;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  }
+
+  .container {
+    max-width: 400px;
+    margin: 40px auto;
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+    text-align: center;
+    transition: background 0.3s;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+    color: var(--accent-color);
+  }
+
+  p {
+    font-size: 1.1rem;
+    margin: 10px 0;
+  }
+
+  #watch-ad, #open-ad {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 15px 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.3s;
+    margin-top: 10px;
+  }
+
+  #watch-ad:hover, #open-ad:hover {
+    background-color: #7e33e4;
+    transform: scale(1.05);
+  }
+
+  #watch-ad:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+  }
+
+  #countdown {
+    margin-top: 15px;
+    font-weight: bold;
+    color: var(--accent-color);
+  }
+
+  #dark-toggle {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--accent-color);
+    transition: transform 0.2s ease, color 0.3s ease;
+    padding: 5px;
+    border-radius: 8px;
+  }
+
+  #dark-toggle:hover {
+    background-color: rgba(98, 0, 234, 0.1);
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 500px) {
+    .container {
+      margin: 20px;
+      padding: 20px;
+    }
+    h2 {
+      font-size: 1.3rem;
+    }
+    #watch-ad, #open-ad {
+      width: 100%;
+    }
+  }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <span><strong>PlugainCoin:</strong> <span id="plugain-coin">0</span></span>
+    <button id="dark-toggle">🌙</button>
+  </div>
+  <div class="container">
+    <h2>🎥 Reklam İzle ve Puan Kazan</h2>
+    <p><strong>Kullanıcı Adı:</strong> <span id="user-name">Yükleniyor...</span></p>
+    <p><strong>Tıklama Sayısı:</strong> <span id="click-count">Yükleniyor...</span></p>
+    <p><strong>Puanlarınız:</strong> <span id="user-points">Yükleniyor...</span></p>
+    <button id="watch-ad">Puan Kazan</button>
+    <p id="countdown"></p>
+    <!-- ✅ Yeni: Reklam İzle Butonu -->
+    <button id="open-ad">Reklam İzle</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      get,
+      set,
+      update,
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+    const firebaseConfig = {
+      databaseURL: "https://plugain-1f481-default-rtdb.europe-west1.firebasedatabase.app/",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const tg = window.Telegram.WebApp;
+      tg.ready();
+
+      const user = tg.initDataUnsafe?.user;
+      if (!user) {
+        document.body.innerHTML = "<h2 style='text-align:center;'>Kullanıcı ID'si alınamadı.<br>Lütfen Telegram Mini App üzerinden tekrar giriş yapın.</h2>";
+        return;
+      }
+
+      const uid = user.id;
+      const name = user.first_name;
+
+      const userRef = ref(db, `users/${uid}`);
+      const snapshot = await get(userRef);
+
+      let userData;
+      if (snapshot.exists()) {
+        userData = snapshot.val();
+      } else {
+        userData = {
+          name,
+          points: 0,
+          clickCount: 0,
+          lastClick: null,
+          plugainCoin: 0
+        };
+        await set(userRef, userData);
+      }
+
+      document.getElementById("user-name").textContent = userData.name || name;
+      document.getElementById("click-count").textContent = userData.clickCount;
+      document.getElementById("user-points").textContent = userData.points;
+      document.getElementById("plugain-coin").textContent = userData.plugainCoin;
+
+      const watchBtn = document.getElementById("watch-ad");
+      const countdownEl = document.getElementById("countdown");
+
+      function updateCountdown(targetTime) {
+        function update() {
+          const now = new Date();
+          const distance = targetTime - now;
+          if (distance <= 0) {
+            countdownEl.textContent = "";
+            watchBtn.disabled = false;
+            return;
+          }
+
+          const h = String(Math.floor(distance / (1000 * 60 * 60))).padStart(2, "0");
+          const m = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, "0");
+          const s = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, "0");
+          countdownEl.textContent = `Tekrar reklam izlemek için: ${h}:${m}:${s}`;
+          setTimeout(update, 1000);
+        }
+        update();
+      }
+
+      const now = new Date();
+      const lastClickDate = userData.lastClick ? new Date(userData.lastClick) : null;
+      if (lastClickDate && now - lastClickDate < 86400000) {
+        watchBtn.disabled = true;
+        updateCountdown(new Date(lastClickDate.getTime() + 86400000));
+      }
+
+      watchBtn.addEventListener("click", async () => {
+        const newClickCount = userData.clickCount + 1;
+        const newPoints = userData.points + 10;
+        const newCoin = Math.floor(newPoints / 100);
+
+        await update(userRef, {
+          clickCount: newClickCount,
+          points: newPoints,
+          plugainCoin: newCoin,
+          lastClick: new Date().toISOString()
+        });
+
+        document.getElementById("click-count").textContent = newClickCount;
+        document.getElementById("user-points").textContent = newPoints;
+        document.getElementById("plugain-coin").textContent = newCoin;
+        watchBtn.disabled = true;
+        updateCountdown(new Date(Date.now() + 86400000));
+
+        tg.openLink("https://www.youtube.com");
+      });
+
+      // ✅ Yeni Buton: Reklam İzle (adsgram.ai açar)
+      document.getElementById("open-ad").addEventListener("click", () => {
+        tg.openLink("https://uvoonaix.top/4/9250644");
+      });
+
+      const darkToggle = document.getElementById("dark-toggle");
+
+      function updateDarkIcon() {
+        darkToggle.textContent = document.body.classList.contains("dark-mode") ? "🌞" : "🌙";
+      }
+
+      darkToggle.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        updateDarkIcon();
+      });
+
+      updateDarkIcon();
+    });
+  </script>
+</body>
+</html>
