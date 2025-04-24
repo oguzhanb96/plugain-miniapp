@@ -66,7 +66,7 @@
       margin: 10px 0;
     }
 
-    #watch-ad {
+    #daily-reward {
       background-color: var(--accent-color);
       color: white;
       border: none;
@@ -78,17 +78,17 @@
       margin-top: 10px;
     }
 
-    #watch-ad:hover {
+    #daily-reward:hover {
       background-color: #7e33e4;
       transform: scale(1.05);
     }
 
-    #watch-ad:disabled {
+    #daily-reward:disabled {
       background-color: #aaa;
       cursor: not-allowed;
     }
 
-    #rewarded-ad {
+    #watch-ad {
       background-color: var(--accent-color);
       color: white;
       border: none;
@@ -100,12 +100,12 @@
       margin-top: 16px;
     }
 
-    #rewarded-ad:hover {
+    #watch-ad:hover {
       background-color: #7e33e4;
       transform: scale(1.05);
     }
 
-    #countdown {
+    #daily-countdown {
       margin-top: 15px;
       font-weight: bold;
       color: var(--accent-color);
@@ -149,10 +149,10 @@
       h2 {
         font-size: 1.3rem;
       }
-      #watch-ad {
+      #daily-reward {
         width: 100%;
       }
-      #rewarded-ad {
+      #watch-ad {
         width: 100%;
       }
     }
@@ -179,29 +179,29 @@
     <p><strong>Username:</strong> <span id="user-name">Loading...</span></p>
     <p><strong>Click Count:</strong> <span id="click-count">Loading...</span></p>
     <p><strong>Your Points:</strong> <span id="user-points">Loading...</span></p>
-    <button id="watch-ad">Daily Rewards</button>
-    <button id="rewarded-ad" style="margin-top:16px;">Watch Ad (+10 Points)</button>
-    <p id="countdown"></p>
+    <button id="daily-reward">Claim Daily Reward</button>
+    <p id="daily-countdown"></p>
+    <button id="watch-ad">Watch Ad (+10 Points)</button>
   </div>
   <!-- Reklam SDK Scripti (show_9248782 için) -->
   <script src='//whephiwums.com/sdk.js' data-zone='9248782' data-sdk='show_9248782'></script>
   <script src="common.js"></script>
   <script>
     function updateCountdown(targetTime) {
-      const countdownEl = document.getElementById("countdown");
+      const countdownEl = document.getElementById("daily-countdown");
       function update() {
         const now = new Date();
         const distance = targetTime - now;
         if (distance <= 0) {
           countdownEl.textContent = "";
-          const watchBtn = document.getElementById("watch-ad");
-          if(watchBtn) watchBtn.disabled = false;
+          const dailyBtn = document.getElementById("daily-reward");
+          if(dailyBtn) dailyBtn.disabled = false;
           return;
         }
         const h = String(Math.floor(distance / (1000 * 60 * 60))).padStart(2, "0");
         const m = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, "0");
         const s = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, "0");
-        countdownEl.textContent = `Wait to earn points again: ${h}:${m}:${s}`;
+        countdownEl.textContent = `Wait to claim daily reward: ${h}:${m}:${s}`;
         setTimeout(update, 1000);
       }
       update();
@@ -214,16 +214,16 @@
         if(document.getElementById('user-points')) document.getElementById('user-points').textContent = userData.points || 0;
         if(document.getElementById('click-count')) document.getElementById('click-count').textContent = userData.clickCount || 0;
         // Daily reward countdown
-        const watchBtn = document.getElementById("watch-ad");
-        const countdownEl = document.getElementById("countdown");
-        if(watchBtn && countdownEl) {
+        const dailyBtn = document.getElementById("daily-reward");
+        const countdownEl = document.getElementById("daily-countdown");
+        if(dailyBtn && countdownEl) {
           const now = new Date();
-          const lastClickDate = userData.lastClick ? new Date(userData.lastClick) : null;
-          if (lastClickDate && now - lastClickDate < 86400000) {
-            watchBtn.disabled = true;
-            updateCountdown(new Date(lastClickDate.getTime() + 86400000));
+          const lastDaily = userData.lastDailyReward ? new Date(userData.lastDailyReward) : null;
+          if (lastDaily && now - lastDaily < 86400000) {
+            dailyBtn.disabled = true;
+            updateCountdown(new Date(lastDaily.getTime() + 86400000));
           } else {
-            watchBtn.disabled = false;
+            dailyBtn.disabled = false;
             countdownEl.textContent = "";
           }
         }
@@ -231,7 +231,39 @@
       setDarkModeFromStorage();
       setupDarkModeToggle();
     });
-    // Watch Ad button ad code
+    // Daily Reward button logic
+    document.addEventListener('DOMContentLoaded', function() {
+      const dailyBtn = document.getElementById("daily-reward");
+      if(dailyBtn) {
+        dailyBtn.addEventListener("click", async function() {
+          fetchUserData(async function(userData) {
+            const userId = getUserId();
+            const now = new Date();
+            if (!userData.lastDailyReward || (now - new Date(userData.lastDailyReward)) >= 86400000) {
+              const newPoints = (userData.points || 0) + 20;
+              const newCoin = Math.floor(newPoints / 100);
+              const updated = {
+                ...userData,
+                points: newPoints,
+                plugainCoin: newCoin,
+                lastDailyReward: now.toISOString()
+              };
+              await fetch(`${FIREBASE_URL}/users/${userId}.json`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updated)
+              });
+              showToast('You claimed your daily reward!');
+              document.getElementById('user-points').textContent = newPoints;
+              document.getElementById('plugain-coin').textContent = newCoin;
+              dailyBtn.disabled = true;
+              updateCountdown(new Date(now.getTime() + 86400000));
+            }
+          });
+        });
+      }
+    });
+    // Watch Ad button logic
     document.addEventListener('DOMContentLoaded', function() {
       const watchBtn = document.getElementById("watch-ad");
       if(watchBtn) {

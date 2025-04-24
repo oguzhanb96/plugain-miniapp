@@ -101,7 +101,7 @@ function setupDarkModeToggle() {
   const darkToggle = document.getElementById('dark-toggle');
   if (!darkToggle) return;
   function updateDarkIcon() {
-    darkToggle.textContent = document.body.classList.contains('dark-mode') ? '🌞' : '🌙';
+    darkToggle.textContent = document.body.classList.contains('dark-mode') ? '🌙' : '🌙'; // Always moon emoji
   }
   darkToggle.addEventListener('click', function() {
     document.body.classList.toggle('dark-mode');
@@ -119,10 +119,10 @@ function renderLeaderboard(containerId) {
       if (!users) return;
       let arr = Object.entries(users).map(([id, data]) => ({ name: data.name || id, coin: data.plugainCoin || 0 }));
       arr = arr.sort((a, b) => b.coin - a.coin).slice(0, 10);
-      let crown = [
-        '<span title="1.">👑<span style="color:#FFD700;font-size:1.1em;">🥇</span></span>', // Gold
-        '<span title="2.">👑<span style="color:#C0C0C0;font-size:1.1em;">🥈</span></span>', // Silver
-        '<span title="3.">👑<span style="color:#CD7F32;font-size:1.1em;">🥉</span></span>'  // Bronze
+      let medals = [
+        '<span style="color:#FFD700;font-size:1.1em;">🥇</span>', // Gold
+        '<span style="color:#C0C0C0;font-size:1.1em;">🥈</span>', // Silver
+        '<span style="color:#CD7F32;font-size:1.1em;">🥉</span>'  // Bronze
       ];
       let html = '<div style="background:var(--card-bg);margin:32px auto;padding:28px 18px 18px 18px;border-radius:18px;max-width:440px;box-shadow:0 6px 24px rgba(0,0,0,0.10);">';
       html += '<h3 style="color:var(--accent-color);margin-bottom:18px;font-size:1.4em;letter-spacing:1px;">Leaderboard</h3>';
@@ -130,8 +130,8 @@ function renderLeaderboard(containerId) {
       html += '<tr style="background:#f8f8f8;color:#222;font-weight:600;"><th style="padding:8px 0;width:40px;">#</th><th style="text-align:left;padding:8px 0;">User</th><th style="padding:8px 0;">PlugainCoin</th></tr>';
       arr.forEach((user, idx) => {
         let style = idx === 0 ? 'background:rgba(255,215,0,0.08);font-weight:bold;' : idx === 1 ? 'background:rgba(192,192,192,0.08);' : idx === 2 ? 'background:rgba(205,127,50,0.08);' : 'background:#fff;';
-        let taç = idx < 3 ? crown[idx] : '';
-        html += `<tr style="${style}"><td style="text-align:center;">${idx+1} ${taç}</td><td style="text-align:left;">${user.name}</td><td style="text-align:center;">${user.coin}</td></tr>`;
+        let medal = idx < 3 ? medals[idx] : '';
+        html += `<tr style="${style}"><td style="text-align:center;">${idx+1} ${medal}</td><td style="text-align:left;">${user.name}</td><td style="text-align:center;">${user.coin}</td></tr>`;
       });
       html += '</table></div>';
       document.getElementById(containerId).innerHTML = html;
