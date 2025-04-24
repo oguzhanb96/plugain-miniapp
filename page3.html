@@ -125,6 +125,9 @@
         document.getElementById('plugain-coin').textContent = userData.plugainCoin || 0;
       });
       renderLeaderboard('leaderboard-container');
+      setInterval(function() {
+        renderLeaderboard('leaderboard-container');
+      }, 15000); // 15 saniyede bir güncelle
     });
   </script>
   <script>
