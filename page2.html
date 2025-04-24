@@ -112,12 +112,24 @@
     #dark-toggle:hover {
       transform: scale(1.1);
     }
+    .main-dark-btn {
+      font-size: 1.2rem;
+      padding: 8px 12px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .main-dark-btn:hover {
+      transform: scale(1.1);
+    }
   </style>
 </head>
 <body>
   <div class="topbar card-bg" style="display:flex;align-items:center;gap:10px;position:relative;">
     <span><strong>PlugainCoin:</strong> <span id="plugain-coin">0</span></span>
-    <button id="dark-toggle">🌙</button>
+    <button id="dark-toggle" class="main-dark-btn">🌙</button>
   </div>
   <div id="vanta-bg" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;"></div>
   <div id="crypto-content" style="padding:40px 0 80px 0;text-align:center;position:relative;z-index:1;"></div>

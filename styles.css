@@ -161,6 +161,40 @@ body {
   padding: 12px 20px;
 }
 
+.main-dark-btn {
+  font-size: 1.22em !important;
+  width: 30px !important;
+  height: 30px !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+  margin-right: 2px;
+  color: #2c2c2c;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.main-dark-btn:hover {
+  color: #222;
+  background: #f3efff;
+  transform: scale(1.13);
+}
+
+@media (max-width: 600px) {
+  .topbar, .card-bg, .plugain-card-bg {
+    padding: 8px 6px;
+    border-radius: 13px;
+  }
+  .main-dark-btn {
+    font-size: 1.09em !important;
+    width: 27px !important;
+    height: 27px !important;
+  }
+}
+
 #dark-toggle {
   font-size: 1.22em !important;
   width: 30px !important;
@@ -182,16 +216,4 @@ body {
   font-size: 1.08em;
   letter-spacing: 1px;
   text-align: center;
-}
-
-@media (max-width: 600px) {
-  .topbar, .card-bg, .plugain-card-bg {
-    padding: 8px 6px;
-    border-radius: 13px;
-  }
-  #dark-toggle {
-    font-size: 1.09em !important;
-    width: 27px !important;
-    height: 27px !important;
-  }
 }

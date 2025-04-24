@@ -223,28 +223,33 @@
     }
     document.addEventListener('DOMContentLoaded', function() {
       setWelcomeGiftIfNeeded();
-      fetchUserData(function(userData) {
-        document.getElementById('plugain-coin').textContent = userData.plugainCoin || 0;
-        if(document.getElementById('user-name')) document.getElementById('user-name').textContent = userData.name || getUserName();
-        if(document.getElementById('user-points')) document.getElementById('user-points').textContent = userData.points || 0;
-        if(document.getElementById('click-count')) document.getElementById('click-count').textContent = userData.clickCount || 0;
-        // Daily reward countdown
-        const dailyBtn = document.getElementById("daily-reward");
-        const countdownEl = document.getElementById("daily-countdown");
-        if(dailyBtn && countdownEl) {
-          const now = new Date();
-          const lastDaily = userData.lastDailyReward ? new Date(userData.lastDailyReward) : null;
-          if (lastDaily && now - lastDaily < 86400000) {
-            dailyBtn.disabled = true;
-            updateCountdown(new Date(lastDaily.getTime() + 86400000));
-          } else {
-            dailyBtn.disabled = false;
-            countdownEl.textContent = "";
+      // Daily reward butonunu ve sayaç durumunu Firebase'den gelen veriye göre ayarla
+      function setDailyRewardState() {
+        fetchUserData(function(userData) {
+          document.getElementById('plugain-coin').textContent = userData.plugainCoin || 0;
+          if(document.getElementById('user-name')) document.getElementById('user-name').textContent = userData.name || getUserName();
+          if(document.getElementById('user-points')) document.getElementById('user-points').textContent = userData.points || 0;
+          if(document.getElementById('click-count')) document.getElementById('click-count').textContent = userData.clickCount || 0;
+          const dailyBtn = document.getElementById("daily-reward");
+          const countdownEl = document.getElementById("daily-countdown");
+          if(dailyBtn && countdownEl) {
+            const now = new Date();
+            const lastDaily = userData.lastDailyReward ? new Date(userData.lastDailyReward) : null;
+            if (lastDaily && now - lastDaily < 86400000) {
+              dailyBtn.disabled = true;
+              updateCountdown(new Date(lastDaily.getTime() + 86400000));
+            } else {
+              dailyBtn.disabled = false;
+              countdownEl.textContent = "";
+            }
           }
-        }
-      });
+        });
+      }
+      setDailyRewardState();
       setDarkModeFromStorage();
       setupDarkModeToggle();
+      // Her 30 saniyede bir sunucudan veri çekerek butonun durumunu güncelle (kullanıcı başka cihazdan ödül alırsa da güncellenir)
+      setInterval(setDailyRewardState, 30000);
     });
     // Daily Reward button logic
     document.addEventListener('DOMContentLoaded', function() {
@@ -274,6 +279,15 @@
               document.getElementById('plugain-coin').textContent = newCoin;
               dailyBtn.disabled = true;
               updateCountdown(new Date(now.getTime() + 86400000));
+            } else {
+              // Sunucudan tekrar veri çekip butonun durumunu güncelle
+              fetchUserData(function(userData) {
+                const lastDaily = userData.lastDailyReward ? new Date(userData.lastDailyReward) : null;
+                if (lastDaily && (new Date() - lastDaily) < 86400000) {
+                  dailyBtn.disabled = true;
+                  updateCountdown(new Date(lastDaily.getTime() + 86400000));
+                }
+              });
             }
           });
         });
