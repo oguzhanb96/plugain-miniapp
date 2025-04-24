@@ -2,7 +2,20 @@
 // Firebase ayarları
 const FIREBASE_URL = "https://plugain-1f481-default-rtdb.europe-west1.firebasedatabase.app";
 
+function getTelegramUser() {
+  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+    return window.Telegram.WebApp.initDataUnsafe.user;
+  }
+  return null;
+}
+
 function getUserId() {
+  const tgUser = getTelegramUser();
+  if (tgUser && tgUser.id) {
+    localStorage.setItem('plugainUserId', tgUser.id);
+    if (tgUser.first_name) localStorage.setItem('plugainUserName', tgUser.first_name);
+    return tgUser.id;
+  }
   let userId = localStorage.getItem('plugainUserId');
   if (!userId) {
     userId = 'user_' + Math.random().toString(36).substring(2, 12);
@@ -11,26 +24,38 @@ function getUserId() {
   return userId;
 }
 
-function fetchPlugainCoin(callback) {
+function getUserName() {
+  const tgUser = getTelegramUser();
+  if (tgUser && tgUser.first_name) {
+    localStorage.setItem('plugainUserName', tgUser.first_name);
+    return tgUser.first_name;
+  }
+  return localStorage.getItem('plugainUserName') || 'Kullanıcı';
+}
+
+function fetchUserData(callback) {
   const userId = getUserId();
   fetch(`${FIREBASE_URL}/users/${userId}.json`)
     .then(r => r.json())
     .then(userData => {
-      if (userData && typeof userData.plugainCoin !== 'undefined') {
-        callback(userData.plugainCoin);
-      } else {
-        callback(0);
-      }
+      callback(userData || {});
     });
+}
+
+function fetchPlugainCoin(callback) {
+  fetchUserData(function(userData) {
+    callback(userData && typeof userData.plugainCoin !== 'undefined' ? userData.plugainCoin : 0);
+  });
 }
 
 function setWelcomeGiftIfNeeded() {
   const userId = getUserId();
+  const name = getUserName();
   fetch(`${FIREBASE_URL}/users/${userId}.json`)
     .then(r => r.json())
     .then(userData => {
       if (!userData || !userData.welcomeGift) {
-        const newUser = Object.assign({ points: 50, plugainCoin: 0, welcomeGift: true, giftName: 'Welcome Plugain Family' }, userData || {});
+        const newUser = Object.assign({ points: 50, plugainCoin: 0, clickCount: 0, welcomeGift: true, giftName: 'Welcome Plugain Family', name: name }, userData || {});
         fetch(`${FIREBASE_URL}/users/${userId}.json`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -92,7 +117,7 @@ function renderLeaderboard(containerId) {
     .then(r => r.json())
     .then(users => {
       if (!users) return;
-      let arr = Object.entries(users).map(([name, data]) => ({ name, coin: data.plugainCoin || 0 }));
+      let arr = Object.entries(users).map(([id, data]) => ({ name: data.name || id, coin: data.plugainCoin || 0 }));
       arr = arr.sort((a, b) => b.coin - a.coin).slice(0, 10);
       let html = '<h3 style="color:var(--accent-color);margin-bottom:14px;">Liderlik Tablosu</h3>';
       html += '<table style="width:100%;border-collapse:collapse;"><tr style="background:#eee;color:#222;"><th>#</th><th>Kullanıcı</th><th>PlugainCoin</th></tr>';

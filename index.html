@@ -189,8 +189,11 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       setWelcomeGiftIfNeeded();
-      fetchPlugainCoin(function(coin) {
-        document.getElementById('plugain-coin').textContent = coin;
+      fetchUserData(function(userData) {
+        document.getElementById('plugain-coin').textContent = userData.plugainCoin || 0;
+        if(document.getElementById('user-name')) document.getElementById('user-name').textContent = userData.name || getUserName();
+        if(document.getElementById('user-points')) document.getElementById('user-points').textContent = userData.points || 0;
+        if(document.getElementById('click-count')) document.getElementById('click-count').textContent = userData.clickCount || 0;
       });
       setDarkModeFromStorage();
       setupDarkModeToggle();
