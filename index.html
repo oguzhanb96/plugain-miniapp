@@ -187,6 +187,25 @@
   <script src='//whephiwums.com/sdk.js' data-zone='9248782' data-sdk='show_9248782'></script>
   <script src="common.js"></script>
   <script>
+    function updateCountdown(targetTime) {
+      const countdownEl = document.getElementById("countdown");
+      function update() {
+        const now = new Date();
+        const distance = targetTime - now;
+        if (distance <= 0) {
+          countdownEl.textContent = "";
+          const watchBtn = document.getElementById("watch-ad");
+          if(watchBtn) watchBtn.disabled = false;
+          return;
+        }
+        const h = String(Math.floor(distance / (1000 * 60 * 60))).padStart(2, "0");
+        const m = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, "0");
+        const s = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, "0");
+        countdownEl.textContent = `Wait to earn points again: ${h}:${m}:${s}`;
+        setTimeout(update, 1000);
+      }
+      update();
+    }
     document.addEventListener('DOMContentLoaded', function() {
       setWelcomeGiftIfNeeded();
       fetchUserData(function(userData) {
@@ -194,9 +213,32 @@
         if(document.getElementById('user-name')) document.getElementById('user-name').textContent = userData.name || getUserName();
         if(document.getElementById('user-points')) document.getElementById('user-points').textContent = userData.points || 0;
         if(document.getElementById('click-count')) document.getElementById('click-count').textContent = userData.clickCount || 0;
+        // Daily reward countdown
+        const watchBtn = document.getElementById("watch-ad");
+        const countdownEl = document.getElementById("countdown");
+        if(watchBtn && countdownEl) {
+          const now = new Date();
+          const lastClickDate = userData.lastClick ? new Date(userData.lastClick) : null;
+          if (lastClickDate && now - lastClickDate < 86400000) {
+            watchBtn.disabled = true;
+            updateCountdown(new Date(lastClickDate.getTime() + 86400000));
+          } else {
+            watchBtn.disabled = false;
+            countdownEl.textContent = "";
+          }
+        }
       });
       setDarkModeFromStorage();
       setupDarkModeToggle();
+    });
+    // Watch Ad button ad code
+    document.addEventListener('DOMContentLoaded', function() {
+      const watchBtn = document.getElementById("watch-ad");
+      if(watchBtn) {
+        watchBtn.addEventListener("click", function() {
+          if(typeof show_9248782 === "function") show_9248782();
+        });
+      }
     });
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
