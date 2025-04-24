@@ -160,17 +160,12 @@
 </head>
 <body>
   <div class="topbar card-bg" style="display:flex;align-items:center;gap:10px;position:relative;">
-    <span><strong>PlugainCoin:</strong> <span id="plugain-coin">0</span></span>
-    <button id="dark-toggle" style="font-size: 1.2rem;">🌙</button>
-    <span id="info-btn" style="cursor:pointer;margin-left:14px;font-size:1.15em;user-select:none;">ℹ️</span>
+    <span><strong>PlugainCoin:</strong> <span id="plugain-coin">0</span> <span id="info-btn" style="cursor:pointer;margin-left:7px;font-size:1.18em;user-select:none;color:#4c6ef5;vertical-align:middle;">ⓘ</span></span>
+    <button id="dark-toggle">🌙</button>
   </div>
   <div id="info-balloon" style="display:none;position:absolute;z-index:100;background:#fff;color:#222;border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,0.18);padding:18px 24px;min-width:220px;max-width:320px;font-size:0.98rem;line-height:1.5;top:62px;left:24px;">
     <button id="close-info" style="position:absolute;top:7px;right:10px;background:none;border:none;font-size:1.1em;cursor:pointer;color:#888;">&times;</button>
     <div id="info-text">You can earn points by claiming the daily reward or watching ads. Every 100 points equals 1 PlugainCoin. Compete on the leaderboard by collecting more coins!</div>
-  </div>
-  <div id="info-balloon" style="display:none;position:absolute;z-index:100;background:#fff;color:#222;border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,0.18);padding:18px 24px;min-width:220px;max-width:320px;font-size:0.98rem;line-height:1.5;">
-    <button id="close-info" style="position:absolute;top:7px;right:10px;background:none;border:none;font-size:1.1em;cursor:pointer;color:#888;">&times;</button>
-    <div id="info-text">You can earn $1 for every 100 points.</div>
   </div>
   <div class="container">
     <h2>Earn Points</h2>
@@ -185,6 +180,28 @@
   <script src='//whephiwums.com/sdk.js' data-zone='9248782' data-sdk='show_9248782'></script>
   <script src="common.js"></script>
   <script>
+    // Info balloon logic (main page)
+    document.addEventListener('DOMContentLoaded', function() {
+      var infoBtn = document.getElementById('info-btn');
+      var infoBalloon = document.getElementById('info-balloon');
+      var closeInfo = document.getElementById('close-info');
+      if(infoBtn && infoBalloon && closeInfo) {
+        infoBtn.addEventListener('click', function(e) {
+          var rect = infoBtn.getBoundingClientRect();
+          infoBalloon.style.display = 'block';
+          infoBalloon.style.top = (window.scrollY + rect.bottom + 8) + 'px';
+          infoBalloon.style.left = (rect.left + rect.width/2 - infoBalloon.offsetWidth/2) + 'px';
+        });
+        closeInfo.addEventListener('click', function() {
+          infoBalloon.style.display = 'none';
+        });
+        document.addEventListener('click', function(e) {
+          if(infoBalloon.style.display === 'block' && !infoBalloon.contains(e.target) && e.target !== infoBtn) {
+            infoBalloon.style.display = 'none';
+          }
+        });
+      }
+    });
     function updateCountdown(targetTime) {
       const countdownEl = document.getElementById("daily-countdown");
       function update() {
