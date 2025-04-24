@@ -182,6 +182,7 @@
     <button id="daily-reward">Claim Daily Reward</button>
     <p id="daily-countdown"></p>
     <button id="watch-ad">Watch Ad (+10 Points)</button>
+    <span id="dark-toggle" style="cursor:pointer;position:absolute;top:18px;right:22px;user-select:none;"></span>
   </div>
   <!-- Reklam SDK Scripti (show_9248782 için) -->
   <script src='//whephiwums.com/sdk.js' data-zone='9248782' data-sdk='show_9248782'></script>
@@ -254,6 +255,7 @@
                 body: JSON.stringify(updated)
               });
               showToast('You claimed your daily reward!');
+              showConfetti();
               document.getElementById('user-points').textContent = newPoints;
               document.getElementById('plugain-coin').textContent = newCoin;
               dailyBtn.disabled = true;
@@ -268,7 +270,28 @@
       const watchBtn = document.getElementById("watch-ad");
       if(watchBtn) {
         watchBtn.addEventListener("click", function() {
-          if(typeof show_9248782 === "function") show_9248782();
+          if(typeof show_9248782 === "function") {
+            show_9248782().then(async function() {
+              fetchUserData(async function(userData) {
+                const userId = getUserId();
+                const newPoints = (userData.points || 0) + 10;
+                const newCoin = Math.floor(newPoints / 100);
+                const updated = {
+                  ...userData,
+                  points: newPoints,
+                  plugainCoin: newCoin
+                };
+                await fetch(`${FIREBASE_URL}/users/${userId}.json`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(updated)
+                });
+                showToast('You earned 10 points by watching an ad!');
+                document.getElementById('user-points').textContent = newPoints;
+                document.getElementById('plugain-coin').textContent = newCoin;
+              });
+            });
+          }
         });
       }
     });

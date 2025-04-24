@@ -61,9 +61,34 @@ function setWelcomeGiftIfNeeded() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newUser)
         });
-        showToast('Congratulations! You have received 50 points as a Welcome Plugain Family gift.');
+        showWelcomeGiftToast();
       }
     });
+}
+
+function showWelcomeGiftToast() {
+  let toast = document.getElementById('plugain-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'plugain-toast';
+    toast.style.position = 'fixed';
+    toast.style.top = '50%';
+    toast.style.left = '50%';
+    toast.style.transform = 'translate(-50%, -50%)';
+    toast.style.background = '#333';
+    toast.style.color = '#fff';
+    toast.style.padding = '28px 42px';
+    toast.style.borderRadius = '22px';
+    toast.style.fontSize = '1.25rem';
+    toast.style.zIndex = '9999';
+    toast.style.opacity = '0.98';
+    toast.style.textAlign = 'center';
+    toast.style.boxShadow = '0 8px 40px rgba(0,0,0,0.18)';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = '🎉 Welcome to Plugain Family! You have received 50 points.';
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 3800);
 }
 
 function showToast(msg) {
@@ -89,6 +114,53 @@ function showToast(msg) {
   setTimeout(() => { toast.style.display = 'none'; }, 3500);
 }
 
+function showConfetti() {
+  const confetti = document.createElement('canvas');
+  confetti.id = 'confetti-canvas';
+  confetti.style.position = 'fixed';
+  confetti.style.left = '0';
+  confetti.style.top = '0';
+  confetti.style.width = '100vw';
+  confetti.style.height = '100vh';
+  confetti.style.pointerEvents = 'none';
+  confetti.style.zIndex = '99999';
+  document.body.appendChild(confetti);
+  // Simple confetti burst
+  const ctx = confetti.getContext('2d');
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  confetti.width = w;
+  confetti.height = h;
+  let pieces = Array.from({length: 32}, () => ({
+    x: Math.random() * w,
+    y: h/2 + (Math.random()-0.5)*80,
+    r: 8 + Math.random()*8,
+    d: 2 + Math.random()*4,
+    color: `hsl(${Math.random()*360},100%,60%)`,
+    angle: Math.random()*2*Math.PI
+  }));
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0,0,w,h);
+    pieces.forEach(p => {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(0,0,p.r,0,2*Math.PI);
+      ctx.fill();
+      ctx.restore();
+      p.y += p.d;
+      p.angle += 0.05;
+    });
+    frame++;
+    if(frame < 45) requestAnimationFrame(draw);
+    else confetti.remove();
+  }
+  draw();
+}
+
 function setDarkModeFromStorage() {
   if (localStorage.getItem('plugainDarkMode') === 'true') {
     document.body.classList.add('dark-mode');
@@ -101,7 +173,14 @@ function setupDarkModeToggle() {
   const darkToggle = document.getElementById('dark-toggle');
   if (!darkToggle) return;
   function updateDarkIcon() {
-    darkToggle.textContent = document.body.classList.contains('dark-mode') ? '🌙' : '🌙'; // Always moon emoji
+    darkToggle.textContent = '🌙';
+    darkToggle.style.fontSize = '1.7em';
+    darkToggle.style.lineHeight = '1';
+    darkToggle.style.width = '38px';
+    darkToggle.style.height = '38px';
+    darkToggle.style.display = 'flex';
+    darkToggle.style.justifyContent = 'center';
+    darkToggle.style.alignItems = 'center';
   }
   darkToggle.addEventListener('click', function() {
     document.body.classList.toggle('dark-mode');
