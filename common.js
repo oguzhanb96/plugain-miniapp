@@ -216,3 +216,30 @@ function renderLeaderboard(containerId) {
       document.getElementById(containerId).innerHTML = html;
     });
 }
+
+function showAdRewardToast() {
+  let adToast = document.getElementById('plugain-ad-toast');
+  if (!adToast) {
+    adToast = document.createElement('div');
+    adToast.id = 'plugain-ad-toast';
+    adToast.style.position = 'fixed';
+    adToast.style.top = '50%';
+    adToast.style.left = '50%';
+    adToast.style.transform = 'translate(-50%, -50%)';
+    adToast.style.background = 'linear-gradient(100deg,#fffbe6 0%, #e0ffd6 100%)';
+    adToast.style.color = '#2d995b';
+    adToast.style.padding = '30px 44px';
+    adToast.style.borderRadius = '25px';
+    adToast.style.fontSize = '1.23rem';
+    adToast.style.fontWeight = 'bold';
+    adToast.style.zIndex = '99999';
+    adToast.style.opacity = '0.98';
+    adToast.style.textAlign = 'center';
+    adToast.style.boxShadow = '0 12px 48px rgba(80,180,70,0.14)';
+    adToast.style.border = '2.5px solid #a0e7b6';
+    adToast.innerHTML = '<span style="font-size:1.8em;">🎁</span><br>+10 Points Earned!';
+    document.body.appendChild(adToast);
+  }
+  adToast.style.display = 'block';
+  setTimeout(() => { adToast.style.display = 'none'; }, 1000);
+}
