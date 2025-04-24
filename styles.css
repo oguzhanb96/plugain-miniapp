@@ -5,6 +5,7 @@
   --button: linear-gradient(90deg, #667eea, #764ba2);
   --button-hover: linear-gradient(90deg, #764ba2, #667eea);
   --coin-bg: #fff;
+  --accent-color: #27ae60;
 }
 
 body.dark {
@@ -151,4 +152,46 @@ body {
   box-shadow: 0 2px 12px rgba(102,126,234,0.11);
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
+}
+
+.topbar, .card-bg, .plugain-card-bg {
+  background: linear-gradient(90deg, #f3efff 0%, #e7f5ff 100%);
+  border-radius: 18px;
+  box-shadow: 0 4px 18px rgba(80,70,180,0.06);
+  padding: 12px 20px;
+}
+
+#dark-toggle {
+  font-size: 1.22em !important;
+  width: 30px !important;
+  height: 30px !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+  margin-right: 2px;
+}
+
+#daily-countdown {
+  margin-top: 15px;
+  font-weight: bold;
+  color: var(--accent-color);
+  font-size: 1.08em;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .topbar, .card-bg, .plugain-card-bg {
+    padding: 8px 6px;
+    border-radius: 13px;
+  }
+  #dark-toggle {
+    font-size: 1.09em !important;
+    width: 27px !important;
+    height: 27px !important;
+  }
 }

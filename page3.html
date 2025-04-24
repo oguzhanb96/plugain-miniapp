@@ -97,21 +97,16 @@
     #login-btn svg {
       display: block;
     }
+    .card-bg {
+      background-color: #f7f7f7;
+    }
   </style>
 </head>
 <body>
   <div id="vanta-bg" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;"></div>
-  <div class="topbar">
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <span><strong>PlugainCoin:</strong> <span id="plugain-coin">0</span>
-        <span id="info-btn" style="cursor:pointer;position:absolute;top:18px;left:22px;user-select:none;">ℹ️</span>
-      </span>
-    </div>
-    <button id="dark-toggle">🌙</button>
-  </div>
-  <div id="info-balloon" style="display:none;position:absolute;top:60px;left:22px;background:#fff;color:#222;border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,0.18);padding:16px 28px;font-size:1.05rem;z-index:1000;min-width:240px;max-width:350px;">
-    <button id="close-info" style="position:absolute;top:7px;right:10px;background:none;border:none;font-size:1.1em;cursor:pointer;color:#888;">&times;</button>
-    <div id="info-text">You can earn points by claiming the daily reward or watching ads. Every 100 points equals 1 PlugainCoin. Compete on the leaderboard by collecting more coins!</div>
+  <div class="topbar card-bg" style="display:flex;align-items:center;gap:10px;position:relative;">
+    <span><strong>PlugainCoin:</strong> <span id="plugain-coin">0</span></span>
+    <button id="dark-toggle" style="font-size: 1.2rem;">🌙</button>
   </div>
   <div id="leaderboard-container" style="padding:40px 0 80px 0;text-align:center;position:relative;z-index:1;"></div>
   <nav class="bottom-nav">
@@ -124,16 +119,11 @@
   <script src="common.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      setWelcomeGiftIfNeeded();
-      fetchUserData(function(userData) {
-        document.getElementById('plugain-coin').textContent = userData.plugainCoin || 0;
-        if(document.getElementById('user-name')) document.getElementById('user-name').textContent = userData.name || getUserName();
-        if(document.getElementById('user-points')) document.getElementById('user-points').textContent = userData.points || 0;
-        if(document.getElementById('click-count')) document.getElementById('click-count').textContent = userData.clickCount || 0;
-      });
       setDarkModeFromStorage();
       setupDarkModeToggle();
-      renderLeaderboard('leaderboard-container');
+      fetchUserData(function(userData) {
+        document.getElementById('plugain-coin').textContent = userData.plugainCoin || 0;
+      });
     });
   </script>
   <script>
@@ -164,30 +154,6 @@
           btn.classList.add('active');
         }
       });
-    });
-  </script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Info balloon logic (same as main page)
-      var infoBtn = document.getElementById('info-btn');
-      var infoBalloon = document.getElementById('info-balloon');
-      var closeInfo = document.getElementById('close-info');
-      if(infoBtn && infoBalloon && closeInfo) {
-        infoBtn.addEventListener('click', function(e) {
-          var rect = infoBtn.getBoundingClientRect();
-          infoBalloon.style.display = 'block';
-          infoBalloon.style.top = (window.scrollY + rect.bottom + 8) + 'px';
-          infoBalloon.style.left = (rect.left + rect.width/2 - infoBalloon.offsetWidth/2) + 'px';
-        });
-        closeInfo.addEventListener('click', function() {
-          infoBalloon.style.display = 'none';
-        });
-        document.addEventListener('click', function(e) {
-          if(infoBalloon.style.display === 'block' && !infoBalloon.contains(e.target) && e.target !== infoBtn) {
-            infoBalloon.style.display = 'none';
-          }
-        });
-      }
     });
   </script>
 </body>

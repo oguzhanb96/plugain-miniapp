@@ -159,16 +159,9 @@
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <button id="login-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 0 6px; color: var(--accent-color);" title="Login">
-        <svg height="22" viewBox="0 0 24 24" width="22" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M12 14c-4 0-7 2-7 4v2h14v-2c0-2-3-4-7-4z"/></svg>
-      </button>
-      <span><strong>PlugainCoin:</strong> <span id="plugain-coin">0</span>
-        <button id="info-btn" aria-label="Info" style="background:none;border:none;padding:0 0 0 4px;vertical-align:middle;cursor:pointer;color:var(--accent-color);font-size:1.1em;">ⓘ</button>
-      </span>
-    </div>
-    <button id="dark-toggle">🌙</button>
+  <div class="topbar card-bg" style="display:flex;align-items:center;gap:10px;position:relative;">
+    <span><strong>PlugainCoin:</strong> <span id="plugain-coin">0</span></span>
+    <button id="dark-toggle" style="font-size: 1.2rem;">🌙</button>
   </div>
   <div id="info-balloon" style="display:none;position:absolute;z-index:100;background:#fff;color:#222;border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,0.18);padding:18px 24px;min-width:220px;max-width:320px;font-size:0.98rem;line-height:1.5;">
     <button id="close-info" style="position:absolute;top:7px;right:10px;background:none;border:none;font-size:1.1em;cursor:pointer;color:#888;">&times;</button>
@@ -182,7 +175,6 @@
     <button id="daily-reward">Claim Daily Reward</button>
     <p id="daily-countdown"></p>
     <button id="watch-ad">Watch Ad (+10 Points)</button>
-    <span id="dark-toggle" style="cursor:pointer;position:absolute;top:18px;right:22px;user-select:none;"></span>
   </div>
   <!-- Reklam SDK Scripti (show_9248782 için) -->
   <script src='//whephiwums.com/sdk.js' data-zone='9248782' data-sdk='show_9248782'></script>
