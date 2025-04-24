@@ -16,6 +16,15 @@ body.dark {
   --coin-bg: #2a2a2a;
 }
 
+body.dark-mode {
+  --bg: url('https://w7.pngwing.com/pngs/891/227/png-transparent-modern-abstract-background-space-background-thumbnail.png'); /* Karanlık mod için farklı bir görsel URL'si ekleyin */
+  --text: #f1f1f1;
+  --card: #1e1e1e;
+  --button: linear-gradient(90deg, #27ae60, #219150);
+  --button-hover: linear-gradient(90deg, #219150, #27ae60);
+  --coin-bg: #2a2a2a;
+}
+
 html, body {
   height: 100%;
   min-height: 100vh;

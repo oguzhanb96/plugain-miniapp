@@ -157,6 +157,88 @@
     document.addEventListener('DOMContentLoaded', fetchCoinPaprika);
   </script>
   <script>
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      get,
+      set,
+      update,
+      query,
+      orderByChild,
+      limitToLast
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+    const firebaseConfig = {
+      databaseURL: "https://plugain-1f481-default-rtdb.europe-west1.firebasedatabase.app/",
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let userId = localStorage.getItem('plugainUserId');
+    if (!userId) {
+      userId = 'user_' + Math.random().toString(36).substring(2, 12);
+      localStorage.setItem('plugainUserId', userId);
+    }
+
+    async function loadUserData() {
+      const userRef = ref(db, 'users/' + userId);
+      let snap = await get(userRef);
+      let userData = snap.exists() ? snap.val() : { points: 0, plugainCoin: 0 };
+      // Welcome hediye kontrolü
+      if (!userData.welcomeGift) {
+        userData.points = (userData.points || 0) + 50;
+        userData.welcomeGift = true;
+        userData.giftName = 'Welcome Plugain Family';
+        await set(userRef, userData);
+        alert('Tebrikler! Welcome Plugain Family hediyesi olarak 50 puan kazandınız.');
+      }
+      document.getElementById("plugain-coin").textContent = userData.plugainCoin || 0;
+    }
+    document.addEventListener('DOMContentLoaded', loadUserData);
+
+    // Gece modu toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const darkToggle = document.getElementById("dark-toggle");
+      function updateDarkIcon() {
+        darkToggle.textContent = document.body.classList.contains("dark-mode") ? "🌞" : "🌙";
+      }
+      darkToggle.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        updateDarkIcon();
+      });
+      updateDarkIcon();
+    });
+
+    // Login baloncuğu
+    document.addEventListener('DOMContentLoaded', function() {
+      const loginBtn = document.getElementById('login-btn');
+      let balloon = document.createElement('div');
+      balloon.id = 'ton-wallet-balloon';
+      balloon.style.display = 'none';
+      balloon.style.position = 'absolute';
+      balloon.style.top = '50px';
+      balloon.style.left = '20px';
+      balloon.style.background = '#fff';
+      balloon.style.color = '#222';
+      balloon.style.borderRadius = '10px';
+      balloon.style.boxShadow = '0 4px 24px rgba(0,0,0,0.18)';
+      balloon.style.padding = '16px 28px';
+      balloon.style.fontSize = '1.05rem';
+      balloon.style.zIndex = '1000';
+      balloon.innerHTML = '<b>TON Wallet ile bağlan</b>';
+      document.body.appendChild(balloon);
+      loginBtn.addEventListener('click', function(e) {
+        balloon.style.display = balloon.style.display === 'none' ? 'block' : 'none';
+      });
+      document.addEventListener('click', function(e) {
+        if (!loginBtn.contains(e.target) && !balloon.contains(e.target)) {
+          balloon.style.display = 'none';
+        }
+      });
+    });
+  </script>
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Info balloon
       var infoBtn = document.getElementById('info-btn');
